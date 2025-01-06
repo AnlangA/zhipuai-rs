@@ -1,9 +1,9 @@
 use anyhow::{anyhow, Result};
 use regex::Regex;
 use std::io::{self, Write};
-use zhipuapi_rs::api_resource::chat::{api::*, data::*, response::*};
-use zhipuapi_rs::http::*;
-use zhipuapi_rs::values::{Role, Model};
+use zhipuai_rs::api_resource::chat::{api::*, data::*, response::*};
+use zhipuai_rs::http::*;
+use zhipuai_rs::values::{Role, Model};
 
 #[tokio::main]
 async fn main() -> Result<()> {

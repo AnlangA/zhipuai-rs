@@ -1,5 +1,5 @@
-use zhipuapi_rs::api_resource::chat::{api::*, data::*, response::*};
-use zhipuapi_rs::prelude::*;
+use zhipuai_rs::api_resource::chat::{api::*, data::*, response::*};
+use zhipuai_rs::prelude::*;
 use anyhow::Result;
 use std::io::{self, Write};
 #[tokio::main]
