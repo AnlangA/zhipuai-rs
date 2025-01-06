@@ -52,9 +52,9 @@ pub enum Role {
 impl From<Role> for &str {
     fn from(s: Role) -> Self {
         match s {
-            Role::System => "System",
-            Role::User => "User",
-            Role::Assistant => "Assistant",
+            Role::System => "system",
+            Role::User => "user",
+            Role::Assistant => "assistant",
         }
     }
 }
@@ -69,9 +69,9 @@ impl From<Role> for String {
 impl AsRef<str> for Role {
     fn as_ref(&self) -> &str {
         match self {
-            Role::System => "System",
-            Role::User => "User",
-            Role::Assistant => "Assistant",
+            Role::System => "system",
+            Role::User => "user",
+            Role::Assistant => "assistant",
         }
     }
 }
