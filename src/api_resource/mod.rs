@@ -1,3 +1,3 @@
-///! # LLM api resources
+//! # LLM api resources
 
 pub mod chat;
