@@ -2,8 +2,8 @@
 name = "zhipuai-rs"
 authors = ["anlang <2682525840@qq.com>"]
 description = "zhipuai 's api of rust"
-documentation = "https://github.com/AnlangA/zhipuai-rs.git"
-repository  = ""
+documentation = "https://docs.rs/zhipuai-rs"
+repository  = "https://github.com/AnlangA/zhipuai-rs.git"
 license = "MIT"
 version = "0.1.2"
 edition = "2021"
