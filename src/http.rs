@@ -1,3 +1,5 @@
+///! # LLM information post interface
+
 use std::borrow::Cow;
 
 pub async fn post<'a>(
