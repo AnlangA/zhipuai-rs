@@ -1,0 +1,21 @@
+use std::borrow::Cow;
+
+pub async fn post<'a>(
+    api_url: impl Into<Cow<'a, str>>,
+    api_key: impl Into<Cow<'a, str>>,
+    request_json: impl Into<Cow<'a, str>>,
+) -> Result<reqwest::Response, reqwest::Error> {
+    let api_url = api_url.into();
+    let api_key = api_key.into();
+    let request_json = request_json.into();
+
+    let client = reqwest::Client::new();
+    let response = client
+        .post(api_url.as_ref())
+        .header("Authorization", format!("Bearer {}", api_key))
+        .header("Content-Type", "application/json")
+        .body(request_json.into_owned())
+        .send()
+        .await;
+    response
+}
