@@ -1,4 +1,4 @@
-///! # LLM information post interface
+//! # LLM information post interface
 
 use std::borrow::Cow;
 

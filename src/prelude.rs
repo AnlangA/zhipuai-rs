@@ -1,4 +1,4 @@
-///! # will be used often
+//! # will be used often
 
 pub use crate::api_resource::*;
 pub use crate::http::*;
