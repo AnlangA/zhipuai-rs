@@ -38,7 +38,6 @@ async fn main() -> Result<(), Error> {
                 println!("{:?}", err);
             }
         }
-
         print!("输入: ");
         let mut input = String::new();
         io::stdout().flush().unwrap(); // 刷新标准输出，确保提示文字立即显示

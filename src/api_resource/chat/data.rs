@@ -72,10 +72,17 @@ impl Messages {
     pub fn new() -> Self {
         Self { messages: vec![] }
     }
-    /// 
+    /// add a message to the list of messages
     pub fn add_message(mut self, message: Message) ->Self {
         self.messages.push(message);
         self
+    }
+    /// Get the content of the current conversation
+    pub fn to_string(&self) -> String {
+        self.messages.iter()
+            .map(|msg| msg.to_string())
+            .collect::<Vec<String>>()
+            .join("\n")
     }
 }
 
