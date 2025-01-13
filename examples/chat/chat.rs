@@ -29,8 +29,7 @@ async fn main() -> Result<(), Error> {
                 if let Some(choices) = context.get_choices() {
                     for choice in choices {
                         println!("{}", choice.message());
-                        let role = choice.message().role();
-                        let message = choice.message().simple_context().unwrap();
+                        let (role, message) = choice.message().simple_context().unwrap();
                         messages = messages.add_message(simple_message!(role, message));
                     }
                 }

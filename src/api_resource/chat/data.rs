@@ -52,14 +52,10 @@ impl Message {
             tool_calls,
         }
     }
-    /// Get the role of the current conversation
-    pub fn role(&self) -> &str {
-        &self.role
-    }
     /// Get the content of the current conversation
-    pub fn simple_context(&self) -> Option<&str> {
+    pub fn simple_context(&self) -> Option<(&str, &str)> {
         match &self.content {
-            Some(Context::SimpleContexts(content)) => Some(content),
+            Some(Context::SimpleContexts(content)) => Some((&self.role,content)),
             _ => None,
         }
     }
