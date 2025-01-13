@@ -42,28 +42,28 @@ fn read_user_input() -> Result<String> {
 
 async fn translate_text(api_key: &str, text: &str) -> Result<String> {
     let (api_url, request_json) = ApiRequestBuilder::new(Model::GLM4Flash.into())
-        .add_massage(Message::new(
+        .add_message(Message::new(
             Role::Role::System.into().into(),
             Some(Context::SimpleContexts(
                 "你是专业的英文润色高手，你是澳大利亚法律学专业的研究生,但母语是中文，具有相当专业的英语能力。".to_string(),
             )),
             None,
         ))
-        .add_massage(Message::new(
+        .add_message(Message::new(
             Role::User.into(),
             Some(Context::SimpleContexts(
                 "我将发送一段不怎么专业的英文，你需要将这些内容使用你的专业技能进行润色。".to_string(),
             )),
             None,
         ))
-        .add_massage(Message::new(
+        .add_message(Message::new(
             Role::Assistant.into(),
             Some(Context::SimpleContexts(
                 "好的，我会基于我的身份-澳大利亚法律学专业的研究生，使用我的专业技能进行润色。".to_string(),
             )),
             None,
         ))
-        .add_massage(Message::new(
+        .add_message(Message::new(
             Role::User.into(),
             Some(Context::SimpleContexts(text.to_string())),
             None,
@@ -80,7 +80,7 @@ async fn translate_text(api_key: &str, text: &str) -> Result<String> {
         Some(choices) if !choices.is_empty() => {
             let translations: Vec<String> = choices
                 .iter()
-                .map(|choice| format!("{}", choice.get_message())) // 使用 format! 转换为 String
+                .map(|choice| format!("{}", choice.message())) // 使用 format! 转换为 String
                 .collect();
             Ok(translations.join("\n")) // 将翻译结果用换行符连接
         }

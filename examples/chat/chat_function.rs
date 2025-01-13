@@ -29,7 +29,7 @@ async fn main() -> Result<(), Error> {
     let parameters = Parameters::new(hash);
 
     let (api_url, request_json) = ApiRequestBuilder::new(Model::GLM4Flash.into())
-        .add_massage(Message::new(
+        .add_message(Message::new(
             Role::User.into(),
             Some(Context::SimpleContexts(
                 "6月1日深圳到郴州的高铁".to_string(),
@@ -49,7 +49,7 @@ async fn main() -> Result<(), Error> {
         Ok(context) => {
             if let Some(choices) = context.get_choices() {
                 for choice in choices {
-                    println!("{}", choice.get_message());
+                    println!("{}", choice.message());
                 }
             }
         }

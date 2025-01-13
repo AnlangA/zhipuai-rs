@@ -1,7 +1,6 @@
 //! chat model data structure
 use serde::{Deserialize, Deserializer, Serialize};
 use std::any::{Any, TypeId};
-use std::clone::Clone;
 use std::collections::HashMap;
 use std::fmt;
 
@@ -52,6 +51,35 @@ impl Message {
             content,
             tool_calls,
         }
+    }
+    /// Get the role of the current conversation
+    pub fn role(&self) -> &str {
+        &self.role
+    }
+    /// Get the content of the current conversation
+    pub fn simple_context(&self) -> Option<&str> {
+        match &self.content {
+            Some(Context::SimpleContexts(content)) => Some(content),
+            _ => None,
+        }
+    }
+}
+
+/// making generate Messages esay
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Messages{
+    pub messages: Vec<Message>,
+}
+
+impl Messages {
+    /// Create a new Messages with an empty list of messages
+    pub fn new() -> Self {
+        Self { messages: vec![] }
+    }
+    /// 
+    pub fn add_message(mut self, message: Message) ->Self {
+        self.messages.push(message);
+        self
     }
 }
 
@@ -390,7 +418,7 @@ pub struct Choice {
 }
 
 impl Choice {
-    pub fn get_message(&self) -> &Message {
+    pub fn message(&self) -> &Message {
         &self.message
     }
 }
