@@ -8,7 +8,7 @@ use std::io::{self, Write};
 async fn main() -> Result<(), Error> {
     let api_key = user_key().unwrap();
     let (api_url, request_json) = ApiRequestBuilder::new(Model::GLM4Flash.into())
-        .add_massage(Message::new(
+        .add_message(Message::new(
             Role::User.into(),
             Some(
                 Context::new_rich_contexts(RichContent::new_image_url(
@@ -26,7 +26,7 @@ async fn main() -> Result<(), Error> {
         Ok(context) => {
             if let Some(choices) = context.get_choices() {
                 for choice in choices {
-                    println!("{}", choice.get_message());
+                    println!("{}", choice.message());
                 }
             }
         }

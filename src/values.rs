@@ -39,8 +39,6 @@
 //! | CodeGeeX-4 | 代码模型: 适用于代码自动补全任务 | 128K | 4k |
 
 use std::fmt;
-use std::convert::From;
-use std::convert::AsRef;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Role {

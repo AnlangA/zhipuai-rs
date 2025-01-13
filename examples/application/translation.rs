@@ -52,28 +52,28 @@ async fn main() -> Result<()> {
 
 async fn translate_text(api_key: &str, text: &str) -> Result<String> {
     let (api_url, request_json) = ApiRequestBuilder::new(GLM_4_PLUS)
-        .add_massage(Message::new(
+        .add_message(Message::new(
             Role::System.into(),
             Some(Context::SimpleContexts(
                 "你是专业的中译英翻译专家，将user发给你的中文翻译成英文，给你的英文翻译成中文".to_string(),
             )),
             None,
         ))
-        .add_massage(Message::new(
+        .add_message(Message::new(
             Role::User.into(),
             Some(Context::SimpleContexts(
                 "将我发给你的中文翻译成英文，给你的英文翻译成中文，只回复翻译内容".to_string(),
             )),
             None,
         ))
-        .add_massage(Message::new(
+        .add_message(Message::new(
             Role::Assistant.into(),
             Some(Context::SimpleContexts(
                 "接下来不管你发什么内容，我都只会进行翻译".to_string(),
             )),
             None,
         ))
-        .add_massage(Message::new(
+        .add_message(Message::new(
             Role::User.into(),
             Some(Context::SimpleContexts(text.to_string())),
             None,
@@ -90,7 +90,7 @@ async fn translate_text(api_key: &str, text: &str) -> Result<String> {
         Some(choices) if !choices.is_empty() => {
             let translations: Vec<String> = choices
                 .iter()
-                .map(|choice| format!("{}", choice.get_message()))
+                .map(|choice| format!("{}", choice.message()))
                 .collect();
             Ok(translations.join("\n"))
         }

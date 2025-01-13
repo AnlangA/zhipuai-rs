@@ -22,7 +22,7 @@ async fn main() -> Result<(), Error> {
         Ok(context) => {
             if let Some(choices) = context.get_choices() {
                 for choice in choices {
-                    println!("{}", choice.get_message());
+                    println!("{}", choice.message());
                 }
             }
         }

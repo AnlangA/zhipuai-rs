@@ -8,14 +8,14 @@ use std::io::{self, Write};
 async fn main() -> Result<(), Error> {
     let api_key = user_key().unwrap();
     let (api_url, request_json) = ApiRequestBuilder::new(Model::GLM4Flash.into())
-        .add_massage(Message::new(
+        .add_message(Message::new(
             Role::System.into(),
             Some(Context::SimpleContexts(
                 "你是全球最顶尖的童话专家".to_string(),
             )),
             None,
         ))
-        .add_massage(Message::new(
+        .add_message(Message::new(
             Role::User.into(),
             Some(Context::SimpleContexts(
                 "讲个童话，至少2000个字".to_string(),

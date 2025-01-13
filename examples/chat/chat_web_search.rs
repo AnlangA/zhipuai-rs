@@ -17,28 +17,28 @@ async fn main() -> Result<(), Error> {
     
     ";
     let (api_url, request_json) = ApiRequestBuilder::new(Model::GLM4Flash.into())
-        .add_massage(Message::new(
+        .add_message(Message::new(
             Role::System.into(),
             Some(Context::SimpleContexts(
                 "你是全球最顶尖的电力电子专家".to_string(),
             )),
             None,
         ))
-        .add_massage(Message::new(
+        .add_message(Message::new(
             Role::User.into(),
             Some(Context::SimpleContexts(
                 "我需要国外充电电源模块最新的进展".to_string(),
             )),
             None,
         ))
-        .add_massage(Message::new(
+        .add_message(Message::new(
             Role::Assistant.into(),
             Some(Context::SimpleContexts(
                 "我用超级计算机查找一下，国内国外的最新消息我都会查找".to_string(),
             )),
             None,
         ))
-        .add_massage(Message::new(
+        .add_message(Message::new(
             Role::User.into(),
             Some(Context::SimpleContexts("介绍一下当前最新情况".to_string())),
             None,

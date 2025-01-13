@@ -1,11 +1,10 @@
 ///! the chat AI api of zhipu
 use super::data::*;
 use serde::{Deserialize, Serialize};
-use std::clone::Clone;
 
 const API_URL: &str = "https://open.bigmodel.cn/api/paas/v4/chat/completions";
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[non_exhaustive]
 pub struct ApiRequest {
     /// model name, default is "glm-4"
@@ -251,7 +250,7 @@ impl ApiRequestBuilder {
     /// example: vec![Tool::new("search", "so nice", Some(true))]
     /// ```ignore
     /// let mut builder = ApiRequestBuilder::new("glm-4")
-    ///                  .add_massages(Message::new("user", Some("hello".to_string()), None))
+    ///                  .add_messages(Message::new("user", Some("hello".to_string()), None))
     ///                  .add_tools(Tool::new("search", "so nice", Some(true)));
     /// ```
     pub fn add_tools(&mut self, tools: Tool) -> &mut Self {
@@ -265,7 +264,7 @@ impl ApiRequestBuilder {
         self.tool_choice = Some(tool_choice.to_string());
         self
     }
-    /// add messages
+    /// add message
     /// default: None
     /// example: vec![Message::new("user", Some("hello".to_string()), None)]
     /// ```ignore
@@ -278,11 +277,16 @@ impl ApiRequestBuilder {
     ///                  .top_p(0.7)
     ///                  .max_tokens(1024)
     ///                  .stop(vec!["\n", "##"])
-    ///                  .add_massage(Message::new("user", Some("hello".to_string()), None));
-    ///                  .add_massage(Message::new("assistant", Some("hello".to_string()), None));
+    ///                  .add_message(Message::new("user", Some("hello".to_string()), None));
+    ///                  .add_message(Message::new("assistant", Some("hello".to_string()), None));
     /// ```
-    pub fn add_massage(&mut self, message: Message) -> &mut Self {
+    pub fn add_message(&mut self, message: Message) -> &mut Self {
         self.messages.push(message);
+        self
+    }
+    /// add messages alse see [`add_message`]
+    pub fn add_messages(&mut self, messages: Messages) -> &mut Self {
+        self.messages.extend(messages.messages);
         self
     }
     /// set code_context for code generation model (CodeGeeX)
