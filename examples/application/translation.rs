@@ -1,20 +1,19 @@
 use anyhow::{anyhow, Result};
-use regex::Regex;
-use zhipuai_rs::api_resource::chat::{api::*, data::*, response::*};
-use zhipuai_rs::http::*;
-use zhipuai_rs::values::{Role, Model};
-use std::io::{self, BufRead,Write};
+use regex::RegexBuilder;
+use std::io::{self, BufRead, Write};
+use zhipuai_rs::prelude::*;
+
 #[tokio::main]
 async fn main() -> Result<()> {
     let api_key = user_key().unwrap();
-  
+
     let stdin = io::stdin();
     let mut handle = stdin.lock();
     println!("输入 'exit' 退出程序。连续按两下'enter'开始翻译");
     loop {
         // 提示用户输入中文文本
         println!("请输入文本:");
-  
+
         // 读取用户输入的多行文本
         let mut input_lines = Vec::new();
         let mut line = String::new();
@@ -31,14 +30,14 @@ async fn main() -> Result<()> {
             input_lines.push(trimmed_line.to_string());
             line.clear(); // 清空line以便下一次输入
         }
-  
+
         if input_lines.is_empty() {
             println!("未输入任何文本，请重新输入。");
             continue;
         }
-  
+
         let input = input_lines.join("\n");
-  
+
         match translate_text(api_key.as_str(), &input).await {
             Ok(translated) => {
                 let translation_result = extract_content(&translated).expect("无法提取内容");
@@ -47,15 +46,15 @@ async fn main() -> Result<()> {
             Err(err) => println!("翻译失败: {:?}", err),
         }
     }
- }
-  
+}
 
 async fn translate_text(api_key: &str, text: &str) -> Result<String> {
-    let (api_url, request_json) = ApiRequestBuilder::new(GLM_4_PLUS)
+    let (api_url, request_json) = ApiRequestBuilder::new(Model::GLM4Flash.into())
         .add_message(Message::new(
             Role::System.into(),
             Some(Context::SimpleContexts(
-                "你是专业的中译英翻译专家，将user发给你的中文翻译成英文，给你的英文翻译成中文".to_string(),
+                "你是专业的中译英翻译专家，将user发给你的中文翻译成英文，给你的英文翻译成中文"
+                    .to_string(),
             )),
             None,
         ))
@@ -82,9 +81,7 @@ async fn translate_text(api_key: &str, text: &str) -> Result<String> {
         .build();
 
     let response = post(api_url, api_key, request_json.to_json()).await?;
-    let context = response_context(response)
-        .await
-        .expect("无法获取上下文");
+    let context = response_context(response).await.expect("无法获取上下文");
 
     match context.get_choices() {
         Some(choices) if !choices.is_empty() => {
@@ -99,7 +96,9 @@ async fn translate_text(api_key: &str, text: &str) -> Result<String> {
 }
 
 fn extract_content(input: &str) -> Result<String> {
-    let re = Regex::new(r"(?m)Content:\s*(.*)")
+    let re = RegexBuilder::new(r"(?m)Content:\s*(.*)")
+        .dot_matches_new_line(true)
+        .build()
         .map_err(|e| anyhow!("无法创建正则表达式: {:?}", e))?;
 
     if let Some(caps) = re.captures(input) {

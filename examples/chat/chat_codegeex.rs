@@ -1,13 +1,11 @@
-use reqwest::Error;
-use zhipuai_rs::api_resource::chat::{api::*, data::*, response::*};
-use zhipuai_rs::http::*;
-use zhipuai_rs::values::{Role, Model};
+use zhipuai_rs::prelude::*;
 use anyhow::Result;
 use std::io::{self, Write};
+
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     let api_key = user_key().unwrap();
-    let (api_url, request_json) = ApiRequestBuilder::new(CODEGEEX_4)
+    let (api_url, request_json) = ApiRequestBuilder::new(Model::CodeGeex4.into())
         .add_code_context(Extra::new(Target::new(
             Some("main.rs".to_string()),
             Some("fn main() {\n    println!(\"Hell".to_string()),

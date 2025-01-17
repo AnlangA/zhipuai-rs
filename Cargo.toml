@@ -42,13 +42,13 @@ path = "examples/application/retext.rs"
 
 [dependencies]
 serde = { version = "1.0.217", features = ["derive"] }
-tokio = { version = "1.42.0", features = ["full"] }
+tokio = { version = "1.43.0", features = ["full"] }
 reqwest = { version = "0.12.12", features = ["json","stream"] }
-serde_json = "1.0"
-futures = "0.3"
+serde_json = "1.0.135"
+futures = "0.3.31"
 bytes = "1.9.0"
 async-stream = "0.3.6"
 env_logger = "0.11.6"
-log = "0.4.22"
-anyhow = "1.0"
-regex = "1.11"
+log = "0.4.25"
+anyhow = "1.0.95"
+regex = "1.11.1"

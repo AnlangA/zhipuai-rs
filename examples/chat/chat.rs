@@ -1,26 +1,27 @@
-use reqwest::Error;
-use zhipuai_rs::api_resource::chat::{api::*, data::*, response::*};
-use zhipuai_rs::http::*;
-use zhipuai_rs::values::Model;
 use anyhow::Result;
-use std::io::{self ,Write};
+use std::io::{self, Write};
+use zhipuai_rs::prelude::*;
 
-use zhipuai_rs::simple_message;
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     let api_key = user_key().unwrap();
 
     let mut messages = Messages::new()
-        .add_message(simple_message!("system", "你是中英语翻译专家，请准我为我提供文本翻译服务"))
-        .add_message(simple_message!("user", "准备为我提供文本翻译"))
-        .add_message(simple_message!("assistant", "然可以。请提供您希望翻译的文本，并告诉我您需要将其翻译成哪种语言"))
-        .add_message(simple_message!("user", "专家你好"));
+        .add_message(simple_message!(
+            Role::System,
+            "你是中英语翻译专家，请准我为我提供文本翻译服务"
+        ))
+        .add_message(simple_message!(Role::User, "准备为我提供文本翻译"))
+        .add_message(simple_message!(
+            Role::Assistant,
+            "然可以。请提供您希望翻译的文本，并告诉我您需要将其翻译成哪种语言"
+        ))
+        .add_message(simple_message!(Role::User, "专家你好"));
 
-    loop{
-
+    loop {
         let (api_url, request_json) = ApiRequestBuilder::new(Model::GLM4Flash.into())
-        .add_messages(messages.clone())
-        .build();
+            .add_messages(messages.clone())
+            .build();
 
         let response = post(&api_url, &api_key, request_json.to_json()).await?;
 
@@ -44,7 +45,6 @@ async fn main() -> Result<(), Error> {
         io::stdin().read_line(&mut input).unwrap();
         messages = messages.add_message(simple_message!("user", input));
     }
-
 }
 
 // 用于从终端读取用户输入的函数
