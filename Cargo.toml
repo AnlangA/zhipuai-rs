@@ -1,11 +1,11 @@
 [package]
 name = "zhipuai-rs"
-authors = ["anlang <2682525840@qq.com>"]
+authors = ["anlang <2682525840@qq.com>", "mzdk100 <1721503872@qq.com>"]
 description = "zhipuai 's api of rust"
 documentation = "https://docs.rs/zhipuai-rs"
 repository  = "https://github.com/AnlangA/zhipuai-rs.git"
 license = "MIT"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2021"
 
 [[example]]
