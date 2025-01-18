@@ -1,4 +1,4 @@
-pub mod api_resource;
-pub mod http;
+mod api_resource;
+mod http;
 pub mod prelude;
-pub mod values;
+mod values;

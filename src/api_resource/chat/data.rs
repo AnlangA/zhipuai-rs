@@ -1,8 +1,10 @@
 //! chat model data structure
 use serde::{Deserialize, Deserializer, Serialize};
-use std::any::{Any, TypeId};
-use std::collections::HashMap;
-use std::fmt;
+use std::{
+    any::{Any, TypeId},
+    collections::HashMap,
+    fmt,
+};
 
 /// The context of the current conversation
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -55,7 +57,7 @@ impl Message {
     /// Get the content of the current conversation
     pub fn simple_context(&self) -> Option<(&str, &str)> {
         match &self.content {
-            Some(Context::SimpleContexts(content)) => Some((&self.role,content)),
+            Some(Context::SimpleContexts(content)) => Some((&self.role, content)),
             _ => None,
         }
     }
@@ -63,7 +65,7 @@ impl Message {
 
 /// making generate Messages esay
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct Messages{
+pub struct Messages {
     pub messages: Vec<Message>,
 }
 
@@ -73,13 +75,14 @@ impl Messages {
         Self { messages: vec![] }
     }
     /// add a message to the list of messages
-    pub fn add_message(mut self, message: Message) ->Self {
+    pub fn add_message(mut self, message: Message) -> Self {
         self.messages.push(message);
         self
     }
     /// Get the content of the current conversation
     pub fn to_string(&self) -> String {
-        self.messages.iter()
+        self.messages
+            .iter()
             .map(|msg| msg.to_string())
             .collect::<Vec<String>>()
             .join("\n")
@@ -167,6 +170,7 @@ impl RichContent {
             text: None,
         }
     }
+
     pub fn new_video_url(url: &str) -> Self {
         Self {
             item_type: "video_url".to_string(),
@@ -349,6 +353,7 @@ pub struct Property {
     prop_type: String,
     description: String,
 }
+
 impl Property {
     pub fn new(prop_type: &str, description: &str) -> Property {
         Property {
@@ -364,6 +369,7 @@ pub struct Retrieval {
     knowledge_id: String,
     prompt_template: Option<String>,
 }
+
 impl Retrieval {
     pub fn new(knowledge_id: &str, prompt_template: Option<String>) -> Self {
         Self {
@@ -386,6 +392,7 @@ pub struct WebSearch {
     /// make the search display by configuration
     search_prompt: Option<String>,
 }
+
 impl WebSearch {
     pub fn new() -> Self {
         Self {
@@ -472,6 +479,7 @@ impl WebSearchResponse {
         self.title.as_ref()
     }
 }
+
 impl fmt::Display for WebSearchResponse {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
