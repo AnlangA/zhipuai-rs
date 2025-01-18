@@ -1,9 +1,7 @@
 use anyhow::{anyhow, Result};
-use regex::Regex;
+use regex::RegexBuilder;
 use std::io::{self, Write};
-use zhipuai_rs::api_resource::chat::{api::*, data::*, response::*};
-use zhipuai_rs::http::*;
-use zhipuai_rs::values::{Role, Model};
+use zhipuai_rs::prelude::*;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -11,7 +9,7 @@ async fn main() -> Result<()> {
 
     // 读取用户输入的文本
     let text_to_translate = read_user_input()?;
-    
+
     match translate_text(api_key.as_str(), &text_to_translate).await {
         Ok(translated) => {
             let translation_result = extract_content(&translated).expect("Cannot extract content");
@@ -43,7 +41,7 @@ fn read_user_input() -> Result<String> {
 async fn translate_text(api_key: &str, text: &str) -> Result<String> {
     let (api_url, request_json) = ApiRequestBuilder::new(Model::GLM4Flash.into())
         .add_message(Message::new(
-            Role::Role::System.into().into(),
+            Role::System.into(),
             Some(Context::SimpleContexts(
                 "你是专业的英文润色高手，你是澳大利亚法律学专业的研究生,但母语是中文，具有相当专业的英语能力。".to_string(),
             )),
@@ -90,7 +88,9 @@ async fn translate_text(api_key: &str, text: &str) -> Result<String> {
 
 fn extract_content(input: &str) -> Result<String> {
     // 定义一个正则表达式，匹配 "Content:" 后面的所有字符
-    let re = Regex::new(r"(?m)Content:\s*(.*)")
+    let re = RegexBuilder::new(r"(?m)Content:\s*(.*)")
+        .dot_matches_new_line(true)
+        .build()
         .map_err(|e| anyhow!("Failed to create regex: {:?}", e))?;
 
     // 使用正则表达式进行匹配，并提取第一个捕获组

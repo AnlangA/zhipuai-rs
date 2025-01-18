@@ -1,3 +1,5 @@
 //! # LLM api resources
 
-pub mod chat;
+mod chat;
+
+pub use chat::*;
