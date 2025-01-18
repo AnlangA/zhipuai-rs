@@ -84,6 +84,10 @@ impl Messages {
             .collect::<Vec<String>>()
             .join("\n")
     }
+    /// Clear messages
+    pub fn clear(&mut self) {
+        self.messages.clear();
+    }
 }
 
 /// The context of the current conversation
