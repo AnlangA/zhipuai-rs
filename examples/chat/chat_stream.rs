@@ -5,23 +5,23 @@ use zhipuai_rs::prelude::*;
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     let api_key = user_key().unwrap();
-    let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::GLM4Flash.into())
+    let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::GLMZeroPreview.into())
         .add_message(Message::new(
             Role::System.into(),
             Some(Context::SimpleContexts(
-                "你是全球最顶尖的童话专家".to_string(),
+                "Please think deeply before your response".to_string(),
             )),
             None,
         ))
         .add_message(Message::new(
             Role::User.into(),
             Some(Context::SimpleContexts(
-                "讲个童话，至少2000个字".to_string(),
+                "一个袋子中有5个红球和3个蓝球,随机抽取2个球,抽到至少1个红球的概率为:".to_string(),
             )),
             None,
         ))
         .stream_enable(true)
-        .max_tokens(4096)
+        .max_tokens(12000)
         .build();
 
     let response = post(api_url, api_key, request_json.to_json()).await?;
