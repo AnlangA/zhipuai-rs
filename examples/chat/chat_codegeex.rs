@@ -8,9 +8,9 @@ async fn main() -> Result<(), Error> {
     let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::CodeGeeX.into())
         .add_code_context(Extra::new(Target::new(
             Some("main.rs".to_string()),
-            None,
+            Some("Rust".to_string()),
             Some("fn main() {\n    println!(\"Hell".to_string()),
-            Some("".to_string()),
+            Some("}".to_string()),
         )))
         .max_tokens(4096)
         .build();

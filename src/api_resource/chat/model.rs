@@ -61,7 +61,7 @@ impl From<ChatModelName> for &'static str {
             ChatModelName::GLMZeroPreview => "glm-zero-preview",
             ChatModelName::GLM4Voice => "glm-4-voice",
             ChatModelName::GLM4Alltools => "glm-4-alltools",
-            ChatModelName::CodeGeeX => "codegeex",
+            ChatModelName::CodeGeeX => "codegeex-4",
             ChatModelName::CharGLM4 => "char-glm-4",
             ChatModelName::Emohaa => "emohaa",
         }
