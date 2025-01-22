@@ -1,5 +1,5 @@
 //! # glm4 model name
-use std::fmt::{self, write};
+use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum ChatModelName{
