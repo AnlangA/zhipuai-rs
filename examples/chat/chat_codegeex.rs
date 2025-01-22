@@ -5,9 +5,10 @@ use std::io::{self, Write};
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     let api_key = user_key().unwrap();
-    let (api_url, request_json) = ApiRequestBuilder::new(Model::CodeGeex4.into())
+    let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::CodeGeeX.into())
         .add_code_context(Extra::new(Target::new(
             Some("main.rs".to_string()),
+            None,
             Some("fn main() {\n    println!(\"Hell".to_string()),
             Some("".to_string()),
         )))

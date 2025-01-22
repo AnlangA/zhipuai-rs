@@ -39,7 +39,7 @@ fn read_user_input() -> Result<String> {
 }
 
 async fn translate_text(api_key: &str, text: &str) -> Result<String> {
-    let (api_url, request_json) = ApiRequestBuilder::new(Model::GLM4Flash.into())
+    let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::GLM4Flash.into())
         .add_message(Message::new(
             Role::System.into(),
             Some(Context::SimpleContexts(

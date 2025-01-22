@@ -11,11 +11,11 @@ pub use model::*;
 
 use super::builder::Builder;
 
-pub type Glm4Mod = ApiRequestBuilder;
+pub type Chat = ChatChatApiRequestBuilder;
 
-impl Builder for Glm4Mod {
-    type Item = Glm4Mod;
+impl Builder for Chat {
+    type Item = Chat;
     fn new(model_name: &str) -> Self::Item {
-        Glm4Mod::new(model_name)
+        Chat::new(model_name)
     }
 }

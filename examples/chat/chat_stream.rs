@@ -5,7 +5,7 @@ use zhipuai_rs::prelude::*;
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     let api_key = user_key().unwrap();
-    let (api_url, request_json) = ApiRequestBuilder::new(Model::GLM4Flash.into())
+    let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::GLM4Flash.into())
         .add_message(Message::new(
             Role::System.into(),
             Some(Context::SimpleContexts(

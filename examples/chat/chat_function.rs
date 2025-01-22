@@ -27,7 +27,7 @@ async fn main() -> Result<(), Error> {
     );
     let parameters = Parameters::new(hash);
 
-    let (api_url, request_json) = ApiRequestBuilder::new(Model::GLM4Flash.into())
+    let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::GLM4Flash.into())
         .add_message(Message::new(
             Role::User.into(),
             Some(Context::SimpleContexts(

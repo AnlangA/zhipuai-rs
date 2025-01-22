@@ -528,6 +528,9 @@ pub struct Target {
     // file path
     #[serde(skip_serializing_if = "Option::is_none")]
     path: Option<String>,
+    // language
+    #[serde(skip_serializing_if = "Option::is_none")]
+    language: Option<String>,
     // code prefix
     #[serde(skip_serializing_if = "Option::is_none")]
     code_prefix: Option<String>,
@@ -539,11 +542,13 @@ pub struct Target {
 impl Target {
     pub fn new(
         path: Option<String>,
+        language: Option<String>,
         code_prefix: Option<String>,
         code_suffix: Option<String>,
     ) -> Self {
         Self {
             path,
+            language,
             code_prefix,
             code_suffix,
         }
