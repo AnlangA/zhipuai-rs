@@ -1,3 +1,4 @@
+///! System Message and User Message
 #[macro_export]
 macro_rules! simple_message {
     ($role:expr, $content:expr) => {

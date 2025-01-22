@@ -1,6 +1,7 @@
 use anyhow::Result;
 use std::io::{self, Write};
 use zhipuai_rs::prelude::*;
+use zhipuai_rs::simple_message;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
@@ -19,7 +20,7 @@ async fn main() -> Result<(), Error> {
         .add_message(simple_message!(Role::User, "专家你好"));
 
     loop {
-        let (api_url, request_json) = ApiRequestBuilder::new(Model::GLM4Flash.into())
+        let (api_url, request_json) = BigModel::<Glm4Mod>::new(GLM4::GLM4Flash.into())
             .add_messages(messages.clone())
             .build();
 
