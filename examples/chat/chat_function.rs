@@ -30,8 +30,8 @@ async fn main() -> Result<(), Error> {
     let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::GLM4Flash.into())
         .add_message(Message::new(
             Role::User.into(),
-            Some(Context::SimpleContexts(
-                "6月1日深圳到郴州的高铁".to_string(),
+            Some(Context::simple_context(
+                "6月1日深圳到郴州的高铁",
             )),
             None,
         ))
