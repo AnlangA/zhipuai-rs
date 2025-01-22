@@ -1,5 +1,6 @@
+///! System Message and User Message
 #[macro_export]
-macro_rules! simple_message {
+macro_rules! chat_simple_message {
     ($role:expr, $content:expr) => {
         Message::new(
             $role.into(),

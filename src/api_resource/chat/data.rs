@@ -103,13 +103,13 @@ pub enum Context {
 }
 
 impl Context {
-    pub fn new_simple_contexts(content: &str) -> Self {
+    pub fn simple_context(content: &str) -> Self {
         Context::SimpleContexts(content.to_string())
     }
-    pub fn new_rich_contexts(content: RichContent) -> Self {
+    pub fn rich_contexts(content: RichContent) -> Self {
         Context::RichContents(vec![content])
     }
-    pub fn add_rich_content(mut self, content: RichContent) -> Self {
+    pub fn rich_content(mut self, content: RichContent) -> Self {
         match &mut self {
             Context::SimpleContexts(_) => Context::RichContents(vec![content]),
             Context::RichContents(contents) => {
@@ -140,11 +140,13 @@ pub struct RichContent {
     #[serde(rename = "type")]
     item_type: String,
     #[serde(skip_serializing_if = "Option::is_none")]
+    text: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     video_url: Option<VideoUrl>,
     #[serde(skip_serializing_if = "Option::is_none")]
     image_url: Option<ImageUrl>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    text: Option<String>,
+    input_audio: Option<Audio>,
 }
 
 /// video url when use RichContent
@@ -159,34 +161,59 @@ struct ImageUrl {
     url: String,
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
+struct Audio {
+    data: String,
+    format: String,
+}
+
 impl RichContent {
-    pub fn new_image_url(url: &str) -> Self {
+    // 创建一个包含图片URL的RichContent实例
+    pub fn image_url(url: &str) -> Self {
         Self {
             item_type: "image_url".to_string(),
             video_url: None,
             image_url: Some(ImageUrl {
                 url: url.to_string(),
             }),
+            input_audio: None,
             text: None,
         }
     }
 
-    pub fn new_video_url(url: &str) -> Self {
+    // 创建一个包含视频URL的RichContent实例
+    pub fn video_url(url: &str) -> Self {
         Self {
             item_type: "video_url".to_string(),
             video_url: Some(VideoUrl {
                 url: url.to_string(),
             }),
             image_url: None,
+            input_audio: None,
             text: None,
         }
     }
-    pub fn new_text(text: &str) -> Self {
+    // 创建一个包含文本的RichContent实例
+    pub fn text(text: &str) -> Self {
         Self {
             item_type: "text".to_string(),
             video_url: None,
             image_url: None,
+            input_audio: None,
             text: Some(text.to_string()),
+        }
+    }
+
+    pub fn audio(data: &str) -> Self {
+        Self {
+            item_type: "input_audio".to_string(),
+            video_url: None,
+            image_url: None,
+            input_audio: Some(Audio {
+                data: data.to_string(),
+                format: "awv".to_string(),
+            }),
+            text: None,
         }
     }
 }
@@ -528,6 +555,9 @@ pub struct Target {
     // file path
     #[serde(skip_serializing_if = "Option::is_none")]
     path: Option<String>,
+    // language
+    #[serde(skip_serializing_if = "Option::is_none")]
+    language: Option<String>,
     // code prefix
     #[serde(skip_serializing_if = "Option::is_none")]
     code_prefix: Option<String>,
@@ -539,11 +569,13 @@ pub struct Target {
 impl Target {
     pub fn new(
         path: Option<String>,
+        language: Option<String>,
         code_prefix: Option<String>,
         code_suffix: Option<String>,
     ) -> Self {
         Self {
             path,
+            language,
             code_prefix,
             code_suffix,
         }

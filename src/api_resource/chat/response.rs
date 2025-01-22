@@ -38,6 +38,7 @@ pub struct ChoiceStream {
     index: u32,
     delta: Delta,
 }
+
 impl ChoiceStream {
     pub fn get_content(&self) -> &String {
         &self.delta.content

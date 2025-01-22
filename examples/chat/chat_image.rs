@@ -5,14 +5,14 @@ use zhipuai_rs::prelude::*;
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     let api_key = user_key().unwrap();
-    let (api_url, request_json) = ApiRequestBuilder::new(Model::GLM4VFlash.into())
+    let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::GLM4Flash.into())
         .add_message(Message::new(
             Role::User.into(),
             Some(
-                Context::new_rich_contexts(RichContent::new_image_url(
+                Context::rich_contexts(RichContent::image_url(
                     "https://sfile.chatglm.cn/testpath/8b01b0b4-51fd-5b51-90a1-3ad8fec8b00d_0.png",
                 ))
-                .add_rich_content(RichContent::new_text("图里面有什么")),
+                .add_rich_content(RichContent::text("图里面有什么")),
             ),
             None,
         ))
@@ -43,3 +43,4 @@ fn user_key() -> Result<String> {
     io::stdin().read_line(&mut input)?;
     Ok(input.trim().to_string()) // 去除输入内容的首尾空白字符
 }
+            // 如果self是RichContents类型，则将content添加到其中

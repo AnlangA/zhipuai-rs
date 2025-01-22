@@ -6,7 +6,7 @@ const API_URL: &str = "https://open.bigmodel.cn/api/paas/v4/chat/completions";
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[non_exhaustive]
-pub struct ApiRequest {
+pub struct ChatApiRequest {
     /// model name, default is "glm-4"
     model: String,
     /// Passed by the client side and needs to be unique. It is a unique identifier used to distinguish each request.
@@ -51,13 +51,13 @@ pub struct ApiRequest {
     code_context: Option<Extra>,
 }
 
-impl ApiRequest {
+impl ChatApiRequest {
     pub fn to_json(&self) -> String {
         serde_json::to_string(self).unwrap()
     }
 }
 
-pub struct ApiRequestBuilder {
+pub struct ChatChatApiRequestBuilder {
     /// model name, default is "glm-4"
     model: String,
     /// Passed by the client side and needs to be unique. It is a unique identifier used to distinguish each request.
@@ -90,7 +90,7 @@ pub struct ApiRequestBuilder {
     /// codegeex model information.
     code_context: Option<Extra>,
 }
-impl ApiRequestBuilder {
+impl ChatChatApiRequestBuilder {
     pub fn new(model: &str) -> Self {
         Self {
             model: model.to_string(),
@@ -111,7 +111,7 @@ impl ApiRequestBuilder {
     /// set model name。
     /// example: "glm-4"
     /// ```ignore
-    /// let mut builder = ApiRequestBuilder::new("glm-4");
+    /// let mut builder = ChatChatApiRequestBuilder::new("glm-4");
     /// ```
     pub fn model_name(&mut self, model: &str) -> &mut Self {
         self.model = model.to_string();
@@ -120,7 +120,7 @@ impl ApiRequestBuilder {
     /// set request_id
     /// example: "1234567890"
     /// ```ignore
-    /// let mut builder = ApiRequestBuilder::new("glm-4")
+    /// let mut builder = ChatChatApiRequestBuilder::new("glm-4")
     ///                  .request_id("1234567890");
     /// ```
     pub fn request_id(&mut self, request_id: &str) -> &mut Self {
@@ -130,7 +130,7 @@ impl ApiRequestBuilder {
     /// set user_id
     /// example: "1234567890"
     /// ```ignore
-    /// let mut builder = ApiRequestBuilder::new("glm-4")
+    /// let mut builder = ChatChatApiRequestBuilder::new("glm-4")
     ///                  .request_id("1234567890")
     ///                  .user_id("1234567890");
     /// ```
@@ -141,7 +141,7 @@ impl ApiRequestBuilder {
     /// set do_sample
     /// example: true
     /// ```ignore
-    /// let mut builder = ApiRequestBuilder::new("glm-4")
+    /// let mut builder = ChatChatApiRequestBuilder::new("glm-4")
     ///                  .request_id("1234567890")
     ///                  .user_id("1234567890")
     ///                  .do_sample_enable(true);
@@ -157,7 +157,7 @@ impl ApiRequestBuilder {
     ///          3. If `stream` is true and the `function` is used, a `stream` response cannot be obtained.
     /// example: true
     /// ```ignore
-    /// let mut builder = ApiRequestBuilder::new("glm-4")
+    /// let mut builder = ChatChatApiRequestBuilder::new("glm-4")
     ///                  .request_id("1234567890")
     ///                  .user_id("1234567890")
     ///                  .do_sample_enable(true)
@@ -171,7 +171,7 @@ impl ApiRequestBuilder {
     /// default: None。**when it is `None`, the model will use the default value : 0.95**
     /// example: 0.95
     /// ```ignore
-    /// let mut builder = ApiRequestBuilder::new("glm-4")
+    /// let mut builder = ChatChatApiRequestBuilder::new("glm-4")
     ///                  .request_id("1234567890")
     ///                  .user_id("1234567890")
     ///                  .do_sample_enable(true)
@@ -193,7 +193,7 @@ impl ApiRequestBuilder {
     /// default: None。**when it is `None`, the model will use the default value : 0.7**
     /// example: 0.7
     /// ```ignore
-    /// let mut builder = ApiRequestBuilder::new("glm-4")
+    /// let mut builder = ChatChatApiRequestBuilder::new("glm-4")
     ///                  .request_id("1234567890")
     ///                  .user_id("1234567890")
     ///                  .do_sample_enable(true)
@@ -214,7 +214,7 @@ impl ApiRequestBuilder {
     /// default: None。**when it is `None`, the model will use the default value : 1024**
     /// example: 1024
     /// ```ignore
-    /// let mut builder = ApiRequestBuilder::new("glm-4")
+    /// let mut builder = ChatChatApiRequestBuilder::new("glm-4")
     ///                  .request_id("1234567890")
     ///                  .user_id("1234567890")
     ///                  .do_sample_enable(true)
@@ -231,7 +231,7 @@ impl ApiRequestBuilder {
     /// default: None
     /// example:
     /// ```ignore
-    /// let mut builder = ApiRequestBuilder::new("glm-4")
+    /// let mut builder = ChatChatApiRequestBuilder::new("glm-4")
     ///                  .request_id("1234567890")
     ///                  .user_id("1234567890")
     ///                  .do_sample_enable(true)
@@ -249,7 +249,7 @@ impl ApiRequestBuilder {
     /// default: None
     /// example: vec![Tool::new("search", "so nice", Some(true))]
     /// ```ignore
-    /// let mut builder = ApiRequestBuilder::new("glm-4")
+    /// let mut builder = ChatChatApiRequestBuilder::new("glm-4")
     ///                  .add_messages(Message::new("user", Some("hello".to_string()), None))
     ///                  .add_tools(Tool::new("search", "so nice", Some(true)));
     /// ```
@@ -268,7 +268,7 @@ impl ApiRequestBuilder {
     /// default: None
     /// example: vec![Message::new("user", Some("hello".to_string()), None)]
     /// ```ignore
-    /// let mut builder = ApiRequestBuilder::new("glm-4")
+    /// let mut builder = ChatChatApiRequestBuilder::new("glm-4")
     ///                  .request_id("1234567890")
     ///                  .user_id("1234567890")
     ///                  .do_sample_enable(true)
@@ -295,10 +295,10 @@ impl ApiRequestBuilder {
         self.code_context = Some(code_context);
         self
     }
-    pub fn build(&self) -> (String, ApiRequest) {
+    pub fn build(&self) -> (String, ChatApiRequest) {
         (
             API_URL.to_string(),
-            ApiRequest {
+            ChatApiRequest {
                 model: self.model.clone(),
                 request_id: self.request_id.clone(),
                 user_id: self.user_id.clone(),
