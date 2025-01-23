@@ -27,25 +27,25 @@
   - [x] `emohaa`
 - realtime 系列
   - [x] `glm-4-realtime`
-  - []  `glm-4-voice`
+  - [ ] `glm-4-voice`
 - images 系列
-  - []  `cogview-4`
-  - []  `cogview-3-flash`
+  - [ ] `cogview-4`
+  - [ ] `cogview-3-flash`
 - videos 系列
-  - []  `cogvideox`
-  - []  `cogvideox-flash`
+  - [ ] `cogvideox`
+  - [ ] `cogvideox-flash`
 - assistant 系列
-  - []  `glm-4-assistant`
+  - [ ] `glm-4-assistant`
 - embeddings 系列
-  - []  `embedding-2`
-  - []  `embedding-3`
+  - [ ] `embedding-2`
+  - [ ] `embedding-3`
 - knowledge 系列
-  - []  `智能体`
-  - []  `金融智能体`
-  - []  `知识库`
-- [] 模型微调api
+  - [ ] `智能体`
+  - [ ] `金融智能体`
+  - [ ] `知识库`
+- [ ] 模型微调api
 - webSearch 系列
-  - []  `web-search-pro`
+  - [ ] `web-search-pro`
 - batchs 系列
-  - []  `batch`
-- []  `文件管理`: 为其他模型提供文件上传下载服务
+  - [ ] `batch`
+- [ ] `文件管理`: 为其他模型提供文件上传下载服务
