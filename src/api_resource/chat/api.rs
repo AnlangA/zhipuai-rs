@@ -90,6 +90,7 @@ pub struct ChatChatApiRequestBuilder {
     /// codegeex model information.
     code_context: Option<Extra>,
 }
+
 impl ChatChatApiRequestBuilder {
     pub fn new(model: &str) -> Self {
         Self {
@@ -108,6 +109,7 @@ impl ChatChatApiRequestBuilder {
             code_context: None,
         }
     }
+
     /// set model name。
     /// example: "glm-4"
     /// ```ignore
@@ -117,6 +119,7 @@ impl ChatChatApiRequestBuilder {
         self.model = model.to_string();
         self
     }
+
     /// set request_id
     /// example: "1234567890"
     /// ```ignore
@@ -127,6 +130,7 @@ impl ChatChatApiRequestBuilder {
         self.request_id = Some(request_id.to_string());
         self
     }
+
     /// set user_id
     /// example: "1234567890"
     /// ```ignore
@@ -138,6 +142,7 @@ impl ChatChatApiRequestBuilder {
         self.user_id = Some(user_id.to_string());
         self
     }
+
     /// set do_sample
     /// example: true
     /// ```ignore
@@ -150,6 +155,7 @@ impl ChatChatApiRequestBuilder {
         self.do_sample = Some(do_sample);
         self
     }
+
     /// set stream enable。
     /// default: false
     /// WARNING: 1. if `stream` is true, the response will be a stream response.
@@ -167,6 +173,7 @@ impl ChatChatApiRequestBuilder {
         self.stream = Some(stream);
         self
     }
+
     /// set temperature
     /// default: None。**when it is `None`, the model will use the default value : 0.95**
     /// example: 0.95
@@ -189,6 +196,7 @@ impl ChatChatApiRequestBuilder {
         self.temperature = Some(temperature);
         self
     }
+
     /// set top_p
     /// default: None。**when it is `None`, the model will use the default value : 0.7**
     /// example: 0.7
@@ -210,6 +218,7 @@ impl ChatChatApiRequestBuilder {
         self.top_p = Some(top_p);
         self
     }
+
     /// set max_tokens
     /// default: None。**when it is `None`, the model will use the default value : 1024**
     /// example: 1024
@@ -227,6 +236,7 @@ impl ChatChatApiRequestBuilder {
         self.max_tokens = Some(max_tokens);
         self
     }
+
     /// set stop
     /// default: None
     /// example:
@@ -245,6 +255,7 @@ impl ChatChatApiRequestBuilder {
         self.stop = Some(stop);
         self
     }
+
     /// set tools
     /// default: None
     /// example: vec![Tool::new("search", "so nice", Some(true))]
@@ -257,6 +268,7 @@ impl ChatChatApiRequestBuilder {
         self.tools.get_or_insert_with(Vec::new).push(tools);
         self
     }
+
     /// set tool_choice
     /// default: None。
     /// just support `auto`。Do not use it!
@@ -264,6 +276,7 @@ impl ChatChatApiRequestBuilder {
         self.tool_choice = Some(tool_choice.to_string());
         self
     }
+
     /// add message
     /// default: None
     /// example: vec![Message::new("user", Some("hello".to_string()), None)]
@@ -284,17 +297,20 @@ impl ChatChatApiRequestBuilder {
         self.messages.push(message);
         self
     }
+
     /// add messages alse see [`add_message`]
     pub fn add_messages(&mut self, messages: Messages) -> &mut Self {
         self.messages.extend(messages.messages);
         self
     }
+
     /// set code_context for code generation model (CodeGeeX)
     /// default: None
     pub fn add_code_context(&mut self, code_context: Extra) -> &mut Self {
         self.code_context = Some(code_context);
         self
     }
+
     pub fn build(&self) -> (String, ChatApiRequest) {
         (
             API_URL.to_string(),

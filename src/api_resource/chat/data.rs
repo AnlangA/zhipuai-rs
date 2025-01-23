@@ -106,9 +106,11 @@ impl Context {
     pub fn simple_context(content: &str) -> Self {
         Context::SimpleContexts(content.to_string())
     }
+
     pub fn rich_contexts(content: RichContent) -> Self {
         Context::RichContents(vec![content])
     }
+
     pub fn rich_content(mut self, content: RichContent) -> Self {
         match &mut self {
             Context::SimpleContexts(_) => Context::RichContents(vec![content]),
@@ -254,17 +256,20 @@ impl Tool {
         self
     }
     /// use `function` tool
+    ///
     pub fn function(mut self, function: Function) -> Self {
         self.check_type(&function);
         self.function = Some(function);
         self
     }
+
     /// use `retrieval` tool
     pub fn retrieval(mut self, retrieval: Retrieval) -> Self {
         self.check_type(&retrieval);
         self.retrieval = Some(retrieval);
         self
     }
+
     /// check tool type and modify `type` of tool
     fn check_type<T: Any>(&mut self, _value: &T) {
         let type_id = TypeId::of::<T>();
@@ -296,6 +301,7 @@ pub struct ToolCall {
     id: String,
     index: u32,
 }
+
 impl fmt::Display for ToolCall {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
@@ -343,6 +349,7 @@ pub struct Function {
     /// Please validate these parameters in your code before calling the function.
     parameters: Parameters,
 }
+
 impl Function {
     pub fn new(name: &str, description: &str, parameters: Parameters) -> Self {
         Self {
@@ -359,7 +366,7 @@ pub struct Parameters {
     #[serde(rename = "type")]
     param_type: String,
     properties: HashMap<String, Property>,
-    required: Vec<String>,
+    required: Option<Vec<String>>,
 }
 
 impl Parameters {
@@ -368,7 +375,7 @@ impl Parameters {
         Self {
             param_type: "object".to_string(),
             properties: properties,
-            required: required,
+            required: Some(required),
         }
     }
 }

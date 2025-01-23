@@ -29,7 +29,7 @@ async fn main() -> Result<()> {
             }
             input_lines.push(trimmed_line.to_string());
             line.clear(); // 清空line以便下一次输入
-        } 
+        }
 
         if input_lines.is_empty() {
             println!("未输入任何文本，请重新输入。");
