@@ -30,7 +30,8 @@ impl ApiResponse {
 #[derive(Debug, Deserialize, Serialize)]
 struct Delta {
     role: String,
-    content: String,
+    content: Option<String>,
+    tool_calls: Option<Vec<ToolCall>>,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -40,8 +41,18 @@ pub struct ChoiceStream {
 }
 
 impl ChoiceStream {
-    pub fn get_content(&self) -> &String {
-        &self.delta.content
+    pub fn get_content(&self) -> String {
+        self.delta.content.clone().unwrap_or_default().clone()
+    }
+
+    pub fn get_tool_calls(&self) -> String {
+        let data = self.delta.tool_calls.clone().unwrap_or_default();
+        let mut string_data = String::new();
+        for item in data {
+            let item_data = format!("{}",item);
+            string_data = format!("{}{}", string_data, item_data);
+        }
+        string_data
     }
 }
 
@@ -147,9 +158,14 @@ fn process_json_objects(string_buffer: &mut String) -> Result<Vec<String>> {
                     Ok(api_response) => {
                         if let Some(choices) = api_response.get_choices() {
                             for message in choices {
-                                processed_data.push(message.get_content().to_string());
+                                if !message.get_content().to_string().is_empty() {
+                                    processed_data.push(message.get_content().to_string());
+                                } else if !message.get_tool_calls().to_string().is_empty() {
+                                    processed_data.push(message.get_tool_calls().to_string());
+                                }
                             }
                         }
+
                     }
                     Err(e) => {
                         match serde_json::from_str::<Value>(json_str) {

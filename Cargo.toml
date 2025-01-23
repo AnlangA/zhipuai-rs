@@ -40,6 +40,10 @@ path = "examples/application/translation.rs"
 name = "retext"
 path = "examples/application/retext.rs"
 
+[[example]]
+name = "chat_draw"
+path = "examples/chat/chat_draw.rs"
+
 [dependencies]
 base64 = "0.22.1"
 serde = { version = "1.0.217", features = ["derive"] }

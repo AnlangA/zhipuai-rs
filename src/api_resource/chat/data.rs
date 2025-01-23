@@ -30,7 +30,6 @@ impl fmt::Display for Message {
                 write!(f, "Role: {}\nTool Calls:", self.role)?;
                 match &self.tool_calls {
                     Some(calls) => {
-                        // 如果存在，则打印每个 ToolCall
                         for tool_call in calls {
                             write!(f, "\n  {}", tool_call)?;
                         }
@@ -238,6 +237,12 @@ pub struct Tool {
     function: Option<Function>,
     #[serde(skip_serializing_if = "Option::is_none")]
     retrieval: Option<Retrieval>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    code_interpreter: Option<CodeInterPerter>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    drawing_tool: Option<DrawingTool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    web_browser: Option<WebBrowser>,
 }
 
 impl Tool {
@@ -247,6 +252,9 @@ impl Tool {
             web_search: None,
             function: None,
             retrieval: None,
+            code_interpreter: None,
+            drawing_tool: None,
+            web_browser: None,
         }
     }
     /// use `seb_search` tool
@@ -270,6 +278,27 @@ impl Tool {
         self
     }
 
+    /// use `code_interpreter` tool
+    pub fn code_interpreter(mut self, code_interpreter: CodeInterPerter) -> Self {
+        self.check_type(&code_interpreter);
+        self.code_interpreter = Some(code_interpreter);
+        self
+    }
+
+    /// use `drawing_tool` tool
+    pub fn drawing_tool(mut self, drawing_tool: DrawingTool) -> Self {
+        self.check_type(&drawing_tool);
+        self.drawing_tool = None;
+        self
+    }
+
+    /// use `web_browser` tool
+    pub fn web_browser(mut self, web_browser: WebBrowser) -> Self {
+        self.check_type(&web_browser);
+        self.web_browser = Some(web_browser);
+        self
+    }
+
     /// check tool type and modify `type` of tool
     fn check_type<T: Any>(&mut self, _value: &T) {
         let type_id = TypeId::of::<T>();
@@ -279,6 +308,12 @@ impl Tool {
             self.tool_type = Some(ToolType::function)
         } else if type_id == TypeId::of::<Retrieval>() {
             self.tool_type = Some(ToolType::retrieval)
+        } else if type_id == TypeId::of::<CodeInterPerter>() {
+            self.tool_type = Some(ToolType::code_interpreter)
+        } else if type_id == TypeId::of::<DrawingTool>() {
+            self.tool_type = Some(ToolType::drawing_tool)
+        } else if type_id == TypeId::of::<WebBrowser>() {
+            self.tool_type = Some(ToolType::web_browser)
         }
     }
 }
@@ -290,25 +325,43 @@ pub enum ToolType {
     function,
     retrieval,
     web_search,
+    code_interpreter,
+    drawing_tool,
+    web_browser,
 }
 
 /// Tool response
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ToolCall {
+    id: Option<String>,
     #[serde(rename = "type")]
-    call_type: String,
-    function: FunctionRespon,
-    id: String,
-    index: u32,
+    call_type: Option<String>,
+    function: Option<FunctionRespon>,
+    drawing_tool: Option<DrawingToolRespon>,
+    index: Option<String>,
 }
 
 impl fmt::Display for ToolCall {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
-            f,
-            "ToolCall ID: {}\nIndex: {}\nType: {}\n{}",
-            self.id, self.index, self.call_type, self.function
-        )
+        let mut output = String::new();
+
+        if let Some(id) = &self.id {
+            output.push_str(&format!("ToolCall ID: {}\n", id));
+        }
+        if let Some(index) = &self.index {
+            output.push_str(&format!("Index: {}\n", index));
+        }
+        if let Some(call_type) = &self.call_type {
+            output.push_str(&format!("Type: {}\n", call_type));
+        }
+        if let Some(function) = &self.function {
+            output.push_str(&format!("Function: {}\n", function));
+        }
+        if let Some(drawing_tool) = &self.drawing_tool {
+            output.push_str(&format!("Drawing Tool: {}\n", drawing_tool));
+        }
+        // Write the final output string to the formatter
+        write!(f, "{}", output)
     }
 }
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -452,6 +505,109 @@ impl WebSearch {
         self.search_prompt = Some(search_prompt.to_string());
         self
     }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct CodeInterPerter{
+    /// Whether to enable code sandbox. if enable, the server will execute the code in a sandbox environment
+    sandbox: SandBox,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    file_ids: Option<Vec<String>>
+}
+
+impl Default for CodeInterPerter {
+    fn default() -> Self {
+        Self {
+            sandbox: SandBox::Auto,
+            file_ids: Some(Vec::new()),
+        }
+    }
+}
+
+impl CodeInterPerter {
+    pub fn new() -> Self {
+        Self {
+            sandbox: SandBox::Auto,
+            file_ids: Some(Vec::new()),
+        }
+    }
+    pub fn sandbox(mut self, sandbox: SandBox) -> Self {
+        self.sandbox = sandbox;
+        self
+    }
+    pub fn file_ids(mut self, file_ids: String) -> Self {
+        self.file_ids.as_mut().unwrap().push(file_ids);
+        self
+    }
+}
+
+/// Specify the code sandbox environment. auto by default, which means automatically calling the sandbox environment 
+/// to execute code. After setting `sandbox = none `, the sandbox environment is not enabled. 
+/// After the code is generated, the returned status is ` status = requires_action `, 
+/// requiring the user to submit the code execution result.
+#[derive(Debug, Serialize, Deserialize, Clone, Copy)]
+pub enum SandBox {
+    #[serde(rename = "auto")]
+    Auto,
+    #[serde(rename = "none")]
+    None,
+}
+
+/// drawing tool. You only need to upload type; this doesn't need to be uploaded.
+#[derive(Debug, Serialize, Deserialize, Clone, Copy)]
+pub struct DrawingTool;
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct DrawingToolRespon{
+    input: Option<String>,
+    outputs: Option<Vec<Output>>,
+}
+
+impl fmt::Display  for DrawingToolRespon {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let mut tool_data = String::new();
+        if let Some(data) = &self.input {
+            tool_data = format!("input: {}", data);
+        }
+        if let Some(outputs) = &self.outputs {
+            let image_urls: Vec<String> = outputs
+                .iter()
+                .map(|output| output.image.clone())
+                .collect();
+            tool_data = format!("outputs: {:?}", image_urls);
+        }
+        write!(f, "{}", tool_data)
+    }
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+struct Output {
+    image: String,
+}
+
+/// drawing tool. You only need to upload type; this doesn't need to be uploaded.
+/// By default, `browser` = auto automatically browses the web pages for the links in the search results and the entered URLs.
+/// If only the summary information of the search is needed, and the browsing tool is not used, it can be disabled by setting `browser`` = none.
+#[derive(Debug, Serialize, Deserialize, Clone, Copy)]
+pub struct WebBrowser{
+    browser: Browser,
+}
+
+impl Default for WebBrowser {
+    fn default() -> Self {
+        Self {
+            browser: Browser::Auto,
+        }
+    }
+    
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Copy)]
+enum Browser {
+    #[serde(rename = "auto")]
+    Auto,
+    #[serde(rename = "none")]
+    None,
 }
 
 /// response message object
