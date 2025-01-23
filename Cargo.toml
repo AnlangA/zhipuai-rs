@@ -1,11 +1,11 @@
 [package]
 name = "zhipuai-rs"
-authors = ["anlang <2682525840@qq.com>", "mzdk100 <1721503872@qq.com>"]
+authors = ["anlang <2682525840@qq.com>", "SmileSky <mzdk100@foxmail.com>"]
 description = "zhipuai 's api of rust"
 documentation = "https://docs.rs/zhipuai-rs"
 repository  = "https://github.com/AnlangA/zhipuai-rs.git"
 license = "MIT"
-version = "0.1.7"
+version = "0.1.8"
 edition = "2021"
 
 [[example]]
@@ -41,14 +41,18 @@ name = "retext"
 path = "examples/application/retext.rs"
 
 [dependencies]
+base64 = "0.22.1"
 serde = { version = "1.0.217", features = ["derive"] }
 tokio = { version = "1.43.0", features = ["full"] }
+tokio-tungstenite = { version = "0.26.1",features = ["native-tls"] }
 reqwest = { version = "0.12.12", features = ["json","stream"] }
-serde_json = "1.0.135"
+serde_json = "1.0.137"
 futures = "0.3.31"
 bytes = "1.9.0"
+pin-project = "1.1.8"
 async-stream = "0.3.6"
-env_logger = "0.11.6"
-log = "0.4.25"
-anyhow = "1.0.95"
 regex = "1.11.1"
+
+[dev-dependencies]
+rodio = "0.20.1"
+anyhow = "1.0.95"

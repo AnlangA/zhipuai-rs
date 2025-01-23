@@ -2,7 +2,7 @@
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub enum ChatModelName{
+pub enum ChatModelName {
     GLM4Plus,
     GLM4Air0111,
     GLM4AirX,
@@ -19,7 +19,6 @@ pub enum ChatModelName{
     CodeGeeX,
     CharGLM4,
     Emohaa,
-
 }
 
 impl fmt::Display for ChatModelName {
@@ -67,5 +66,3 @@ impl From<ChatModelName> for &'static str {
         }
     }
 }
-
-

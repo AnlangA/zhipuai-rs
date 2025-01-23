@@ -1,7 +1,7 @@
 use anyhow::Result;
 use std::io::{self, Write};
-use zhipuai_rs::prelude::*;
 use zhipuai_rs::chat_simple_message;
+use zhipuai_rs::prelude::*;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
