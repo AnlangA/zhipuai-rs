@@ -162,8 +162,6 @@ fn process_json_objects(string_buffer: &mut String) -> Result<Vec<String>> {
                                     processed_data.push(message.get_content().to_string());
                                 } else if !message.get_tool_calls().to_string().is_empty() {
                                     processed_data.push(message.get_tool_calls().to_string());
-                                } else {
-                                    processed_data.push("No content or tool calls found in the message.".to_string());
                                 }
                             }
                         }
