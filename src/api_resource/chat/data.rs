@@ -560,21 +560,29 @@ pub struct DrawingTool;
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct DrawingToolRespon{
     input: Option<String>,
-    output: Option<Vec<String>>,
+    outputs: Option<Vec<Output>>,
 }
 
 impl fmt::Display  for DrawingToolRespon {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let mut data = String::new();
-        
-        if let Some(input) = &self.input {
-            data.push_str(&format!("input: {}\n", input));
+        let mut tool_data = String::new();
+        if let Some(data) = &self.input {
+            tool_data = format!("input: {}", data);
         }
-        if let Some(output_vec) = &self.output {
-            data.push_str(&format!("output: {}\n", output_vec.join(", ")));
+        if let Some(outputs) = &self.outputs {
+            let image_urls: Vec<String> = outputs
+                .iter()
+                .map(|output| output.image.clone())
+                .collect();
+            tool_data = format!("outputs: {:?}", image_urls);
         }
-        write!(f, "{}", data)
+        write!(f, "{}", tool_data)
     }
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+struct Output {
+    image: String,
 }
 
 /// drawing tool. You only need to upload type; this doesn't need to be uploaded.

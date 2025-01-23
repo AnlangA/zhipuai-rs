@@ -1,8 +1,5 @@
 use anyhow::Result;
-use std::{
-    collections::HashMap,
-    io::{self, Write},
-};
+use std::io::{self, Write};
 use zhipuai_rs::prelude::*;
 
 #[tokio::main]
@@ -12,7 +9,7 @@ async fn main() -> Result<(), Error> {
     let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::GLM4Alltools.into())
         .add_message(
             Message::new(Role::User.into(), 
-            Some(Context::rich_contexts(RichContent::text("画一个苹果"))),
+            Some(Context::rich_contexts(RichContent::text("生成一个 hello kitty 的Melody风格 壁纸"))),
             None)
         )
         .add_tools(Tool::new().drawing_tool(tool))
