@@ -57,7 +57,7 @@ impl ChatApiRequest {
     }
 }
 
-pub struct ChatChatApiRequestBuilder {
+pub struct ChatApiRequestBuilder {
     /// model name, default is "glm-4"
     model: String,
     /// Passed by the client side and needs to be unique. It is a unique identifier used to distinguish each request.
@@ -91,7 +91,7 @@ pub struct ChatChatApiRequestBuilder {
     code_context: Option<Extra>,
 }
 
-impl ChatChatApiRequestBuilder {
+impl ChatApiRequestBuilder {
     pub fn new(model: &str) -> Self {
         Self {
             model: model.to_string(),
@@ -113,7 +113,7 @@ impl ChatChatApiRequestBuilder {
     /// set model name。
     /// example: "glm-4"
     /// ```ignore
-    /// let mut builder = ChatChatApiRequestBuilder::new("glm-4");
+    /// let mut builder = ChatApiRequestBuilder::new("glm-4");
     /// ```
     pub fn model_name(&mut self, model: &str) -> &mut Self {
         self.model = model.to_string();
@@ -123,7 +123,7 @@ impl ChatChatApiRequestBuilder {
     /// set request_id
     /// example: "1234567890"
     /// ```ignore
-    /// let mut builder = ChatChatApiRequestBuilder::new("glm-4")
+    /// let mut builder = ChatApiRequestBuilder::new("glm-4")
     ///                  .request_id("1234567890");
     /// ```
     pub fn request_id(&mut self, request_id: &str) -> &mut Self {
@@ -134,7 +134,7 @@ impl ChatChatApiRequestBuilder {
     /// set user_id
     /// example: "1234567890"
     /// ```ignore
-    /// let mut builder = ChatChatApiRequestBuilder::new("glm-4")
+    /// let mut builder = ChatApiRequestBuilder::new("glm-4")
     ///                  .request_id("1234567890")
     ///                  .user_id("1234567890");
     /// ```
@@ -146,7 +146,7 @@ impl ChatChatApiRequestBuilder {
     /// set do_sample
     /// example: true
     /// ```ignore
-    /// let mut builder = ChatChatApiRequestBuilder::new("glm-4")
+    /// let mut builder = ChatApiRequestBuilder::new("glm-4")
     ///                  .request_id("1234567890")
     ///                  .user_id("1234567890")
     ///                  .do_sample_enable(true);
@@ -163,7 +163,7 @@ impl ChatChatApiRequestBuilder {
     ///          3. If `stream` is true and the `function` is used, a `stream` response cannot be obtained.
     /// example: true
     /// ```ignore
-    /// let mut builder = ChatChatApiRequestBuilder::new("glm-4")
+    /// let mut builder = ChatApiRequestBuilder::new("glm-4")
     ///                  .request_id("1234567890")
     ///                  .user_id("1234567890")
     ///                  .do_sample_enable(true)
@@ -178,7 +178,7 @@ impl ChatChatApiRequestBuilder {
     /// default: None。**when it is `None`, the model will use the default value : 0.95**
     /// example: 0.95
     /// ```ignore
-    /// let mut builder = ChatChatApiRequestBuilder::new("glm-4")
+    /// let mut builder = ChatApiRequestBuilder::new("glm-4")
     ///                  .request_id("1234567890")
     ///                  .user_id("1234567890")
     ///                  .do_sample_enable(true)
@@ -201,7 +201,7 @@ impl ChatChatApiRequestBuilder {
     /// default: None。**when it is `None`, the model will use the default value : 0.7**
     /// example: 0.7
     /// ```ignore
-    /// let mut builder = ChatChatApiRequestBuilder::new("glm-4")
+    /// let mut builder = ChatApiRequestBuilder::new("glm-4")
     ///                  .request_id("1234567890")
     ///                  .user_id("1234567890")
     ///                  .do_sample_enable(true)
@@ -223,7 +223,7 @@ impl ChatChatApiRequestBuilder {
     /// default: None。**when it is `None`, the model will use the default value : 1024**
     /// example: 1024
     /// ```ignore
-    /// let mut builder = ChatChatApiRequestBuilder::new("glm-4")
+    /// let mut builder = ChatApiRequestBuilder::new("glm-4")
     ///                  .request_id("1234567890")
     ///                  .user_id("1234567890")
     ///                  .do_sample_enable(true)
@@ -241,7 +241,7 @@ impl ChatChatApiRequestBuilder {
     /// default: None
     /// example:
     /// ```ignore
-    /// let mut builder = ChatChatApiRequestBuilder::new("glm-4")
+    /// let mut builder = ChatApiRequestBuilder::new("glm-4")
     ///                  .request_id("1234567890")
     ///                  .user_id("1234567890")
     ///                  .do_sample_enable(true)
@@ -260,7 +260,7 @@ impl ChatChatApiRequestBuilder {
     /// default: None
     /// example: vec![Tool::new("search", "so nice", Some(true))]
     /// ```ignore
-    /// let mut builder = ChatChatApiRequestBuilder::new("glm-4")
+    /// let mut builder = ChatApiRequestBuilder::new("glm-4")
     ///                  .add_messages(Message::new("user", Some("hello".to_string()), None))
     ///                  .add_tools(Tool::new("search", "so nice", Some(true)));
     /// ```
@@ -281,7 +281,7 @@ impl ChatChatApiRequestBuilder {
     /// default: None
     /// example: vec![Message::new("user", Some("hello".to_string()), None)]
     /// ```ignore
-    /// let mut builder = ChatChatApiRequestBuilder::new("glm-4")
+    /// let mut builder = ChatApiRequestBuilder::new("glm-4")
     ///                  .request_id("1234567890")
     ///                  .user_id("1234567890")
     ///                  .do_sample_enable(true)

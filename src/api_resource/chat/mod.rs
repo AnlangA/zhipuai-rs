@@ -11,7 +11,7 @@ pub use response::*;
 
 use super::builder::Builder;
 
-pub type Chat = ChatChatApiRequestBuilder;
+pub type Chat = ChatApiRequestBuilder;
 
 impl Builder for Chat {
     type Item = Chat;
