@@ -8,12 +8,9 @@ pub use crate::api_resource::{
         Event as RealtimeEvent, EventData as RealtimeEventData,
         InputTokenDetails as RealtimeInputTokenDetails,
         OutputTokenDetails as RealtimeOutputTokenDetails, Session as RealtimeSession,
-        SessionError as RealtimeSessionError, TurnDetection as RealtimeTurnDetection,
-        Usage as RealtimeUsage, VadType as RealtimeVadType,
+        TurnDetection as RealtimeTurnDetection, Usage as RealtimeUsage, VadType as RealtimeVadType,
     },
     BigModel,
 };
-pub use crate::http::*;
-pub use crate::role::*;
+pub use crate::{error::*, http::*, role::*};
 pub use futures::StreamExt;
-pub use reqwest::Error;

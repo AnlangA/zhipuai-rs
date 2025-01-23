@@ -1,4 +1,3 @@
-use anyhow::Result;
 use std::{
     collections::HashMap,
     io::{self, Write},
@@ -6,7 +5,7 @@ use std::{
 use zhipuai_rs::prelude::*;
 
 #[tokio::main]
-async fn main() -> Result<(), Error> {
+async fn main() -> anyhow::Result<()> {
     let api_key = user_key().unwrap();
     let mut hash = HashMap::new();
     hash.insert(
@@ -58,7 +57,7 @@ async fn main() -> Result<(), Error> {
     Ok(())
 }
 
-fn user_key() -> Result<String> {
+fn user_key() -> anyhow::Result<String> {
     let mut input = String::new();
     print!("输入你的key: ");
     io::stdout().flush()?; // 刷新标准输出，确保提示文字立即显示

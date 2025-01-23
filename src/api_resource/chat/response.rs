@@ -1,12 +1,12 @@
 ///! response of chat api
 use super::data::*;
+use crate::error::ZhipuApiError;
 use async_stream::try_stream;
 use bytes::{Buf, BufMut, BytesMut};
 use futures::StreamExt;
 use reqwest::Response;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use std::error::Error;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ApiResponse {
@@ -49,7 +49,7 @@ impl ChoiceStream {
         let data = self.delta.tool_calls.clone().unwrap_or_default();
         let mut string_data = String::new();
         for item in data {
-            let item_data = format!("{}",item);
+            let item_data = format!("{}", item);
             string_data = format!("{}{}", string_data, item_data);
         }
         string_data
@@ -74,34 +74,40 @@ impl ApiResponseStream {
     }
 }
 
-type Result<T> = std::result::Result<T, Box<dyn Error>>;
-
 /// Fetches the entire response body and returns it.
-pub async fn response_all(response: Response) -> Result<String> {
+pub async fn response_all(response: Response) -> Result<String, ZhipuApiError> {
     if response.status().is_success() {
         let response_text = response.text().await?;
         Ok(response_text)
     } else {
-        Err(format!("Failed to fetch data: {}", response.status()).into())
+        Err(ZhipuApiError::StatusCode(format!(
+            "Failed to fetch data: {}",
+            response.status()
+        )))
     }
 }
 
 /// Parses and returns specific fields from the response body.
-pub async fn response_context(response: Response) -> Result<ApiResponse> {
+pub async fn response_context(response: Response) -> Result<ApiResponse, ZhipuApiError> {
     if response.status().is_success() {
         let response_text = response.text().await?;
         let api_response: ApiResponse = serde_json::from_str(&response_text)?;
         Ok(api_response)
     } else {
-        Err(format!("Failed to fetch data: {}", response.status()).into())
+        Err(ZhipuApiError::StatusCode(format!(
+            "Failed to fetch data: {}",
+            response.status()
+        )))
     }
 }
 
 /// Processes the response body as a stream, parsing chunks and yielding results.
-pub fn response_context_stream(response: Response) -> impl futures::Stream<Item = Result<String>> {
+pub fn response_context_stream(
+    response: Response,
+) -> impl futures::Stream<Item = Result<String, ZhipuApiError>> {
     try_stream! {
         if !response.status().is_success() {
-            Err(format!("Failed to fetch data: {}", response.status()))?;
+            Err(ZhipuApiError::StatusCode(format!("Failed to fetch data: {}", response.status())))?;
         }
         let mut response_text = response.bytes_stream();
         let mut buffer = BytesMut::new();
@@ -125,7 +131,7 @@ pub fn response_context_stream(response: Response) -> impl futures::Stream<Item 
 }
 
 /// Decodes UTF-8 encoded bytes into a string buffer.
-fn decode_utf8(buffer: &mut BytesMut, string_buffer: &mut String) -> Result<()> {
+fn decode_utf8(buffer: &mut BytesMut, string_buffer: &mut String) -> Result<(), ZhipuApiError> {
     loop {
         match std::str::from_utf8(buffer) {
             Ok(s) => {
@@ -148,7 +154,7 @@ fn decode_utf8(buffer: &mut BytesMut, string_buffer: &mut String) -> Result<()> 
 }
 
 /// Processes JSON objects from a string buffer and returns a vector of processed data.
-fn process_json_objects(string_buffer: &mut String) -> Result<Vec<String>> {
+fn process_json_objects(string_buffer: &mut String) -> Result<Vec<String>, ZhipuApiError> {
     let mut processed_data = Vec::new();
     while let Some(end) = string_buffer.find('\n') {
         let json_str = string_buffer[..end].trim();
@@ -165,7 +171,6 @@ fn process_json_objects(string_buffer: &mut String) -> Result<Vec<String>> {
                                 }
                             }
                         }
-
                     }
                     Err(e) => {
                         match serde_json::from_str::<Value>(json_str) {

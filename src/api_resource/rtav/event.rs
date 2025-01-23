@@ -1,7 +1,4 @@
-use super::{
-    error::SessionError,
-    value::{ConversationItem, Error, Response, Session},
-};
+use super::value::{ConversationItem, Error, Response, Session};
 
 use base64::prelude::*;
 use serde::{de::DeserializeOwned, Serialize};
@@ -12,8 +9,9 @@ use std::{
     time::{SystemTime, UNIX_EPOCH},
 };
 use tokio_tungstenite::tungstenite::Message;
+use crate::error::ZhipuApiError;
 
-fn get_timestamp() -> Result<String, SessionError> {
+fn get_timestamp() -> Result<String, ZhipuApiError> {
     Ok(SystemTime::now()
         .duration_since(UNIX_EPOCH)?
         .as_millis()
@@ -25,16 +23,16 @@ pub struct Event {
 }
 
 impl Event {
-    pub(crate) fn into_message(self) -> Result<Message, SessionError> {
+    pub(crate) fn into_message(self) -> Result<Message, ZhipuApiError> {
         Ok(Message::Text(to_string(&self.data)?.into()))
     }
 
     /// 获取事件数据
-    pub fn data(&self) -> Result<EventData, SessionError> {
+    pub fn data(&self) -> Result<EventData, ZhipuApiError> {
         EventData::parse(&self.data)
     }
 
-    pub(super) fn parse(src: Message) -> Result<Self, SessionError> {
+    pub(super) fn parse(src: Message) -> Result<Self, ZhipuApiError> {
         Ok(Self {
             data: from_str(src.to_text()?)?,
         })
@@ -65,7 +63,7 @@ impl Event {
     fn build_client_event(
         data: &mut HashMap<String, Value>,
         r#type: &str,
-    ) -> Result<Self, SessionError> {
+    ) -> Result<Self, ZhipuApiError> {
         let ts = get_timestamp()?;
         data.insert("event_id".to_string(), Value::String(format!("evt-{}", ts)));
         data.insert("type".to_string(), r#Value::String(r#type.to_string()));
@@ -81,7 +79,7 @@ impl Event {
     /// * `audio`: 仅支持wav格式，默认采样率为16000；
     /// 如需自定义采样率，可在参数中标注，wav48表示48000hz采样率；
     /// 建议使用16000、24000、48000hz；
-    pub fn new_input_audio_buffer_append(audio: &[u8]) -> Result<Self, SessionError> {
+    pub fn new_input_audio_buffer_append(audio: &[u8]) -> Result<Self, ZhipuApiError> {
         let mut data = HashMap::new();
         let audio = BASE64_STANDARD.encode(audio);
         data.insert("audio".to_string(), Value::String(audio));
@@ -90,7 +88,7 @@ impl Event {
 
     /// 提交已经上传的音频文件，此事件前必须进行 input_audio_buffer.append，且必须上传一个有效音频或视频文件，否则提交事件会报错。ServerVAD模式下不需要发送此事件，模型将自动上传并提交音频
     /// 调用 input_audio_buffer.commit 时，如果缓冲区内发过 video_frame，会一起打包提交调用模型推理。
-    pub fn new_input_audio_buffer_commit() -> Result<Self, SessionError> {
+    pub fn new_input_audio_buffer_commit() -> Result<Self, ZhipuApiError> {
         Self::build_client_event(&mut Default::default(), "input_audio_buffer.commit")
     }
 
@@ -100,7 +98,7 @@ impl Event {
     /// * `video_frame`: jpg格式图片，不符合 imageSize 的图片，会在服务端被重新 resize 到支持的尺寸
     pub fn new_input_audio_buffer_append_video_frame(
         video_frame: &[u8],
-    ) -> Result<Self, SessionError> {
+    ) -> Result<Self, ZhipuApiError> {
         let mut data = HashMap::new();
         let video_frame = BASE64_STANDARD.encode(video_frame);
         data.insert("video_frame".to_string(), Value::String(video_frame));
@@ -111,7 +109,7 @@ impl Event {
     ///
     /// # 参数
     /// * `item`: 对话项目。
-    pub fn new_conversation_item_create(item: &ConversationItem) -> Result<Self, SessionError> {
+    pub fn new_conversation_item_create(item: &ConversationItem) -> Result<Self, ZhipuApiError> {
         let mut data = HashMap::new();
         let v = item.serialize(Serializer)?;
         data.insert("item".to_string(), v);
@@ -120,12 +118,12 @@ impl Event {
 
     /// 此事件为创建服务器响应，同时也表示触发模型推理。ServerVAD模式服务器会自动创建响应，ClientVAD模式进行视频通话时，需以这个时间点的视频帧和音频传给模型；
     /// 当chat_mode为video时，提交事件之前必须通过input_audio_buffer.append_video_frame事件上传至少一张图片，否则无法创建模型回复，会返回错误事件video_model_query_error；
-    pub fn new_response_create() -> Result<Self, SessionError> {
+    pub fn new_response_create() -> Result<Self, ZhipuApiError> {
         Self::build_client_event(&mut Default::default(), "response.create")
     }
 
     /// 取消模型调用
-    pub fn new_response_cancel() -> Result<Self, SessionError> {
+    pub fn new_response_cancel() -> Result<Self, ZhipuApiError> {
         Self::build_client_event(&mut Default::default(), "response.cancel")
     }
 
@@ -136,7 +134,7 @@ impl Event {
     ///
     /// # 参数
     /// * `session`: 会话配置。
-    pub fn new_session_update(session: &Session) -> Result<Self, SessionError> {
+    pub fn new_session_update(session: &Session) -> Result<Self, ZhipuApiError> {
         let mut data = HashMap::new();
         let v = session.serialize(Serializer)?;
         data.insert("session".to_string(), v);
@@ -201,14 +199,14 @@ impl EventData {
     }
 
     /// 错误转换
-    pub fn resolve(self) -> Result<Self, SessionError> {
+    pub fn resolve(self) -> Result<Self, ZhipuApiError> {
         if let Self::Error(e) = self {
             return Err(e.into());
         }
         Ok(self)
     }
 
-    fn parse(data: &HashMap<String, Value>) -> Result<Self, SessionError> {
+    fn parse(data: &HashMap<String, Value>) -> Result<Self, ZhipuApiError> {
         Ok(match data.get("type") {
             Some(Value::String(r)) => match r.as_str() {
                 "input_audio_buffer.committed" => Self::InputAudioBufferCommitted {
