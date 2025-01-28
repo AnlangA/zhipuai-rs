@@ -1,17 +1,18 @@
-use anyhow::Result;
 use std::io::{self, Write};
 use zhipuai_rs::prelude::*;
 
 #[tokio::main]
-async fn main() -> Result<(), Error> {
+async fn main() -> anyhow::Result<()> {
     let api_key = user_key().unwrap();
     let tool = DrawingTool;
     let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::GLM4Alltools.into())
-        .add_message(
-            Message::new(Role::User.into(), 
-            Some(Context::rich_contexts(RichContent::text("生成一个 hello kitty 的Melody风格 壁纸"))),
-            None)
-        )
+        .add_message(Message::new(
+            Role::User.into(),
+            Some(Context::rich_contexts(RichContent::text(
+                "生成一个 hello kitty 的Melody风格 壁纸",
+            ))),
+            None,
+        ))
         .add_tools(Tool::new().drawing_tool(tool))
         .stream_enable(true)
         .build();
@@ -33,7 +34,7 @@ async fn main() -> Result<(), Error> {
     Ok(())
 }
 
-fn user_key() -> Result<String> {
+fn user_key() -> anyhow::Result<String> {
     let mut input = String::new();
     print!("输入你的key: ");
     io::stdout().flush()?; // 刷新标准输出，确保提示文字立即显示

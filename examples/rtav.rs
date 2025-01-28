@@ -9,7 +9,7 @@ use tokio::{fs::File, io::AsyncReadExt};
 use zhipuai_rs::prelude::*;
 
 #[tokio::main]
-async fn main() -> anyhow::Result<(), RealtimeSessionError> {
+async fn main() -> anyhow::Result<()> {
     let api_key = user_key().unwrap();
     let (mut sink, mut stream) = start_realtime_session(&api_key).await?;
     sink.session_update(

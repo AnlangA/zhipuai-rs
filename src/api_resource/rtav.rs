@@ -2,12 +2,10 @@
 //! GLM-Realtime API 能够提供实时的视频通话功能，具有跨文本、音频和视频进行实时推理的能力，AI可以进行流畅的通话，人可以实时打断AI。
 //! 除了实时音频交互外，Realtime还可通过手机或AIPC的摄像头与人互动，通过共享电脑屏幕阅读页面信息，通过视频流理解对话当前的环境。
 
-mod error;
 mod event;
 mod value;
 
-pub use error::*;
-pub use event::*;
+use crate::error::ZhipuApiError;
 use futures::{
     stream::{SplitSink, SplitStream},
     Sink, SinkExt, Stream, StreamExt,
@@ -23,7 +21,7 @@ use tokio_tungstenite::{
     tungstenite::{client::IntoClientRequest, http::StatusCode, Message},
     MaybeTlsStream, WebSocketStream,
 };
-pub use value::*;
+pub use {event::*, value::*};
 
 #[pin_project]
 pub struct SessionSink {
@@ -38,7 +36,7 @@ impl SessionSink {
     ///
     /// # 参数
     /// * `session`: 会话配置。
-    pub async fn session_update(&mut self, session: &Session) -> Result<(), SessionError> {
+    pub async fn session_update(&mut self, session: &Session) -> Result<(), ZhipuApiError> {
         self.send(Event::new_session_update(session)?).await
     }
 
@@ -50,7 +48,7 @@ impl SessionSink {
     /// * `audio`: 仅支持wav格式，默认采样率为16000；
     /// 如需自定义采样率，可在参数中标注，wav48表示48000hz采样率；
     /// 建议使用16000、24000、48000hz；
-    pub async fn input_audio_buffer_append(&mut self, audio: &[u8]) -> Result<(), SessionError> {
+    pub async fn input_audio_buffer_append(&mut self, audio: &[u8]) -> Result<(), ZhipuApiError> {
         self.send(Event::new_input_audio_buffer_append(audio)?)
             .await
     }
@@ -62,7 +60,7 @@ impl SessionSink {
     pub async fn input_audio_buffer_append_video_frame(
         &mut self,
         video_frame: &[u8],
-    ) -> Result<(), SessionError> {
+    ) -> Result<(), ZhipuApiError> {
         self.send(Event::new_input_audio_buffer_append_video_frame(
             video_frame,
         )?)
@@ -71,7 +69,7 @@ impl SessionSink {
 
     /// 提交已经上传的音频文件，此事件前必须进行 input_audio_buffer.append，且必须上传一个有效音频或视频文件，否则提交事件会报错。ServerVAD模式下不需要发送此事件，模型将自动上传并提交音频
     /// 调用 input_audio_buffer.commit 时，如果缓冲区内发过 video_frame，会一起打包提交调用模型推理。
-    pub async fn input_audio_buffer_commit(&mut self) -> Result<(), SessionError> {
+    pub async fn input_audio_buffer_commit(&mut self) -> Result<(), ZhipuApiError> {
         self.send(Event::new_input_audio_buffer_commit()?).await
     }
 
@@ -82,24 +80,24 @@ impl SessionSink {
     pub async fn conversation_item_create(
         &mut self,
         item: &ConversationItem,
-    ) -> Result<(), SessionError> {
+    ) -> Result<(), ZhipuApiError> {
         self.send(Event::new_conversation_item_create(item)?).await
     }
 
     /// 此事件为创建服务器响应，同时也表示触发模型推理。ServerVAD模式服务器会自动创建响应，ClientVAD模式进行视频通话时，需以这个时间点的视频帧和音频传给模型；
     /// 当chat_mode为video时，提交事件之前必须通过input_audio_buffer.append_video_frame事件上传至少一张图片，否则无法创建模型回复，会返回错误事件video_model_query_error；
-    pub async fn response_create(&mut self) -> Result<(), SessionError> {
+    pub async fn response_create(&mut self) -> Result<(), ZhipuApiError> {
         self.send(Event::new_response_create()?).await
     }
 
     /// 取消模型调用
-    pub async fn response_cancel(&mut self) -> Result<(), SessionError> {
+    pub async fn response_cancel(&mut self) -> Result<(), ZhipuApiError> {
         self.send(Event::new_response_cancel()?).await
     }
 }
 
 impl Sink<Event> for SessionSink {
-    type Error = SessionError;
+    type Error = ZhipuApiError;
 
     fn poll_ready(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
         Pin::new(&mut self.project().inner)
@@ -133,7 +131,7 @@ pub struct SessionStream {
 
 impl SessionStream {
     /// 获取下一个事件数据
-    pub async fn next_data(&mut self) -> Result<Option<EventData>, SessionError> {
+    pub async fn next_data(&mut self) -> Result<Option<EventData>, ZhipuApiError> {
         self.next()
             .await
             .map_or_else(|| Ok(None), |e| e.map_or_else(Err, |e| e.data().map(Some)))
@@ -141,7 +139,7 @@ impl SessionStream {
 }
 
 impl Stream for SessionStream {
-    type Item = Result<Event, SessionError>;
+    type Item = Result<Event, ZhipuApiError>;
 
     fn poll_next(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
         Pin::new(&mut self.project().inner)
@@ -166,7 +164,7 @@ const URL: &str = "wss://open.bigmodel.cn/api/paas/v4/realtime";
 
 pub async fn start_realtime_session(
     api_key: &str,
-) -> Result<(SessionSink, SessionStream), SessionError> {
+) -> Result<(SessionSink, SessionStream), ZhipuApiError> {
     let mut req = URL.into_client_request()?;
     req.headers_mut()
         .insert("Authorization", format!("Bearer {}", api_key).parse()?);
@@ -177,7 +175,7 @@ pub async fn start_realtime_session(
     // 这通常是HTTP升级响应
     let status = response.status();
     if StatusCode::SWITCHING_PROTOCOLS != status && !status.is_success() {
-        return Err(SessionError::StatusCode(status.to_string()));
+        return Err(ZhipuApiError::StatusCode(status.to_string()));
     }
 
     let (send, recv) = stream.split();

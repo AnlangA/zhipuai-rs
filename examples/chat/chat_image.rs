@@ -1,11 +1,10 @@
-use anyhow::Result;
 use base64::prelude::*;
 use std::io::{self, Write};
 use tokio::{fs::File, io::AsyncReadExt};
 use zhipuai_rs::prelude::*;
 
 #[tokio::main]
-async fn main() -> Result<(), Error> {
+async fn main() -> anyhow::Result<()> {
     let api_key = user_key().unwrap();
     let mut data = Default::default();
     File::open("examples/assets/video_frame.jpg")
@@ -47,7 +46,7 @@ async fn main() -> Result<(), Error> {
     Ok(())
 }
 
-fn user_key() -> Result<String> {
+fn user_key() -> anyhow::Result<String> {
     let mut input = String::new();
     print!("输入你的key: ");
     io::stdout().flush()?; // 刷新标准输出，确保提示文字立即显示

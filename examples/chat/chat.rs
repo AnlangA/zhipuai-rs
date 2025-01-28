@@ -1,10 +1,8 @@
-use anyhow::Result;
 use std::io::{self, Write};
-use zhipuai_rs::chat_simple_message;
-use zhipuai_rs::prelude::*;
+use zhipuai_rs::{chat_simple_message, prelude::*};
 
 #[tokio::main]
-async fn main() -> Result<(), Error> {
+async fn main() -> anyhow::Result<()> {
     let api_key = user_key().unwrap();
 
     let mut messages = Messages::new()
@@ -49,7 +47,7 @@ async fn main() -> Result<(), Error> {
 }
 
 // 用于从终端读取用户输入的函数
-fn user_key() -> Result<String> {
+fn user_key() -> anyhow::Result<String> {
     let mut input = String::new();
     print!("输入你的key: ");
     io::stdout().flush()?; // 刷新标准输出，确保提示文字立即显示
