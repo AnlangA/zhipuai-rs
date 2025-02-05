@@ -81,7 +81,7 @@ async fn translate_text(api_key: &str, text: &str) -> Result<String> {
         .build();
 
     let response = post(api_url, api_key, request_json.to_json()).await?;
-    let context = response_context(response).await.expect("无法获取上下文");
+    let context = chat_response_context(response).await.expect("无法获取上下文");
 
     match context.get_choices() {
         Some(choices) if !choices.is_empty() => {

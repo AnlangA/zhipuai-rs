@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct ApiResponse {
+pub struct ChatApiResponse {
     id: Option<String>,
     created: Option<u64>,
     model: Option<String>,
@@ -18,7 +18,7 @@ pub struct ApiResponse {
     usage: Option<Usage>,
     web_search: Option<Vec<WebSearchResponse>>,
 }
-impl ApiResponse {
+impl ChatApiResponse {
     pub fn get_choices(&self) -> Option<&Vec<Choice>> {
         self.choices.as_ref()
     }
@@ -57,7 +57,7 @@ impl ChoiceStream {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct ApiResponseStream {
+pub struct ChatApiResponseStream {
     id: Option<String>,
     created: Option<u64>,
     model: Option<String>,
@@ -65,7 +65,8 @@ pub struct ApiResponseStream {
     usage: Option<Usage>,
     web_search: Option<Vec<WebSearchResponse>>,
 }
-impl ApiResponseStream {
+
+impl ChatApiResponseStream {
     pub fn get_choices(&self) -> Option<&Vec<ChoiceStream>> {
         self.choices.as_ref()
     }
@@ -88,10 +89,10 @@ pub async fn response_all(response: Response) -> Result<String, ZhipuApiError> {
 }
 
 /// Parses and returns specific fields from the response body.
-pub async fn response_context(response: Response) -> Result<ApiResponse, ZhipuApiError> {
+pub async fn chat_response_context(response: Response) -> Result<ChatApiResponse, ZhipuApiError> {
     if response.status().is_success() {
         let response_text = response.text().await?;
-        let api_response: ApiResponse = serde_json::from_str(&response_text)?;
+        let api_response: ChatApiResponse = serde_json::from_str(&response_text)?;
         Ok(api_response)
     } else {
         Err(ZhipuApiError::StatusCode(format!(
@@ -160,7 +161,7 @@ fn process_json_objects(string_buffer: &mut String) -> Result<Vec<String>, Zhipu
         let json_str = string_buffer[..end].trim();
         if !json_str.is_empty() && json_str != "data: [DONE]" {
             if let Some(json_str) = json_str.strip_prefix("data: ") {
-                match serde_json::from_str::<ApiResponseStream>(json_str) {
+                match serde_json::from_str::<ChatApiResponseStream>(json_str) {
                     Ok(api_response) => {
                         if let Some(choices) = api_response.get_choices() {
                             for message in choices {
@@ -175,7 +176,7 @@ fn process_json_objects(string_buffer: &mut String) -> Result<Vec<String>, Zhipu
                     Err(e) => {
                         match serde_json::from_str::<Value>(json_str) {
                            Ok(_) => processed_data.push(format!(
-                               "JSON format is correct, but does not match ApiResponseStream structure: {}",
+                               "JSON format is correct, but does not match ChatApiResponseStream structure: {}",
                                json_str
                            )),
                            Err(_) => processed_data.push(format!("Invalid JSON data: {}", json_str)),

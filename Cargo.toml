@@ -48,6 +48,10 @@ path = "examples/chat/chat_draw.rs"
 name = "chat_zero_preview"
 path = "examples/chat/chat_zero_preview.rs"
 
+[[example]]
+name = "cogview"
+path = "examples/images/cogview.rs"
+
 [dependencies]
 base64 = "0.22.1"
 serde = { version = "1.0.217", features = ["derive"] }
