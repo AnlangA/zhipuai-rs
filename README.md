@@ -20,6 +20,7 @@
   - [x] `glm-4v-plus`
   - [x] `glm-4v`
   - [x] `glm-4v-flash`
+  - [x] `glm-zero-preview`
   - [x] `glm-4-voice`
   - [x] `glm-4-alltools`
   - [x] `codegeex-4`

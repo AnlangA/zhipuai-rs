@@ -44,6 +44,10 @@ path = "examples/application/retext.rs"
 name = "chat_draw"
 path = "examples/chat/chat_draw.rs"
 
+[[example]]
+name = "chat_zero_preview"
+path = "examples/chat/chat_zero_preview.rs"
+
 [dependencies]
 base64 = "0.22.1"
 serde = { version = "1.0.217", features = ["derive"] }
