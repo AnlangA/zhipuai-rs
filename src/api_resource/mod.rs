@@ -1,6 +1,7 @@
 pub mod builder;
 pub mod chat;
 pub mod rtav;
+pub mod images;
 
 use builder::Builder;
 use std::marker::PhantomData;

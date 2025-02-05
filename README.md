@@ -20,6 +20,7 @@
   - [x] `glm-4v-plus`
   - [x] `glm-4v`
   - [x] `glm-4v-flash`
+  - [x] `glm-zero-preview`
   - [x] `glm-4-voice`
   - [x] `glm-4-alltools`
   - [x] `codegeex-4`
@@ -29,8 +30,8 @@
   - [x] `glm-4-realtime`
   - [ ] `glm-4-voice`
 - images 系列
-  - [ ] `cogview-4`
-  - [ ] `cogview-3-flash`
+  - [x] `cogview-4`
+  - [x] `cogview-3-flash`
 - videos 系列
   - [ ] `cogvideox`
   - [ ] `cogvideox-flash`

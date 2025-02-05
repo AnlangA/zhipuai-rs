@@ -70,7 +70,7 @@ async fn translate_text(api_key: &str, text: &str) -> Result<String> {
         .build();
 
     let response = post(api_url, api_key, request_json.to_json()).await?;
-    let context = response_context(response)
+    let context = chat_response_context(response)
         .await
         .expect("Cannot get context");
 

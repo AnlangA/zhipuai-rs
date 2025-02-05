@@ -24,7 +24,7 @@ async fn main() -> anyhow::Result<()> {
         println!("{:?}", request_json.to_json());
         let response = post(&api_url, &api_key, request_json.to_json()).await?;
 
-        match response_context(response).await {
+        match chat_response_context(response).await {
             Ok(context) => {
                 if let Some(choices) = context.get_choices() {
                     for choice in choices {

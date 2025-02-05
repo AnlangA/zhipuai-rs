@@ -5,7 +5,7 @@ description = "zhipuai 's api of rust"
 documentation = "https://docs.rs/zhipuai-rs"
 repository  = "https://github.com/AnlangA/zhipuai-rs.git"
 license = "MIT"
-version = "0.1.10"
+version = "0.1.11"
 edition = "2021"
 
 [[example]]
@@ -43,6 +43,14 @@ path = "examples/application/retext.rs"
 [[example]]
 name = "chat_draw"
 path = "examples/chat/chat_draw.rs"
+
+[[example]]
+name = "chat_zero_preview"
+path = "examples/chat/chat_zero_preview.rs"
+
+[[example]]
+name = "cogview"
+path = "examples/images/cogview.rs"
 
 [dependencies]
 base64 = "0.22.1"
