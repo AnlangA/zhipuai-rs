@@ -30,8 +30,8 @@
   - [x] `glm-4-realtime`
   - [ ] `glm-4-voice`
 - images 系列
-  - [ ] `cogview-4`
-  - [ ] `cogview-3-flash`
+  - [x] `cogview-4`
+  - [x] `cogview-3-flash`
 - videos 系列
   - [ ] `cogvideox`
   - [ ] `cogvideox-flash`
