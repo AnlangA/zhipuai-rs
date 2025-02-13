@@ -1,5 +1,6 @@
-use super::value::{ConversationItem, Error, Response, Session};
+use super::value::{Conversation, ConversationItem, Error, Response, Session};
 
+use crate::error::ZhipuApiError;
 use base64::prelude::*;
 use serde::{de::DeserializeOwned, Serialize};
 use serde_json::{from_str, to_string, value::Serializer, Value};
@@ -9,7 +10,6 @@ use std::{
     time::{SystemTime, UNIX_EPOCH},
 };
 use tokio_tungstenite::tungstenite::Message;
-use crate::error::ZhipuApiError;
 
 fn get_timestamp() -> Result<String, ZhipuApiError> {
     Ok(SystemTime::now()
@@ -149,33 +149,48 @@ pub enum EventData {
     InputAudioBufferCommitted {
         item_id: String,
     },
+    ConversationCreated(Conversation),
     ConversationItemCreated(ConversationItem),
+    ConversationItemInputAudioTranscriptionCompleted {
+        content_index: u32,
+        transcript: String,
+    },
     Heartbeat,
     SessionCreated(Session),
     SessionUpdated(Session),
     ResponseCreated(Response),
+    ResponseAudioDelta {
+        delta: Vec<u8>,
+        content_index: u32,
+        output_index: u32,
+        response_id: String,
+    },
+    ResponseAudioDone {
+        content_index: u32,
+        output_index: u32,
+        item_id: String,
+        response_id: String,
+    },
     ResponseAudioTranscriptDelta {
         delta: String,
         content_index: u32,
         output_index: u32,
         response_id: String,
     },
-    ResponseDone(Response),
-    ConversationItemInputAudioTranscriptionCompleted {
-        content_index: u32,
+    ResponseAudioTranscriptDone {
         transcript: String,
-    },
-    ResponseAudioDelta {
         content_index: u32,
         output_index: u32,
-        delta: Vec<u8>,
+        item_id: String,
+        response_id: String,
     },
+    ResponseDone(Response),
     Error(Error),
 }
 
 impl EventData {
     /// 判断是否是None
-    pub fn is_none(&mut self) -> bool {
+    pub fn is_none(&self) -> bool {
         if let Self::None = self {
             return true;
         }
@@ -212,35 +227,52 @@ impl EventData {
                 "input_audio_buffer.committed" => Self::InputAudioBufferCommitted {
                     item_id: Self::parse_value("item_id", data)?,
                 },
+                "conversation.created" => {
+                    Self::ConversationCreated(Self::parse_value("conversation", data)?)
+                }
                 "conversation.item.created" => {
                     Self::ConversationItemCreated(Self::parse_value("item", data)?)
                 }
-                "heartbeat" => Self::Heartbeat,
-                "session.created" => Self::SessionCreated(Self::parse_value("session", data)?),
-                "session.updated" => Self::SessionUpdated(Self::parse_value("session", data)?),
-                "error" => Self::Error(Self::parse_value("error", data)?),
-                "response.created" => Self::ResponseCreated(Self::parse_value("response", data)?),
-                "response.done" => Self::ResponseDone(Self::parse_value("response", data)?),
-                "response.audio_transcript.delta" => Self::ResponseAudioTranscriptDelta {
-                    delta: Self::parse_value("delta", data)?,
-                    content_index: Self::parse_value("content_index", data)?,
-                    output_index: Self::parse_value("output_index", data)?,
-                    response_id: Self::parse_value("response_id", data)?,
-                },
                 "conversation.item.input_audio_transcription.completed" => {
                     Self::ConversationItemInputAudioTranscriptionCompleted {
                         content_index: Self::parse_value("content_index", data)?,
                         transcript: Self::parse_value("transcript", data)?,
                     }
                 }
+                "heartbeat" => Self::Heartbeat,
+                "session.created" => Self::SessionCreated(Self::parse_value("session", data)?),
+                "session.updated" => Self::SessionUpdated(Self::parse_value("session", data)?),
+                "error" => Self::Error(Self::parse_value("error", data)?),
+                "response.created" => Self::ResponseCreated(Self::parse_value("response", data)?),
                 "response.audio.delta" => {
                     let delta: String = Self::parse_value("delta", data)?;
                     Self::ResponseAudioDelta {
+                        delta: BASE64_STANDARD.decode(delta)?,
                         content_index: Self::parse_value("content_index", data)?,
                         output_index: Self::parse_value("output_index", data)?,
-                        delta: BASE64_STANDARD.decode(delta)?,
+                        response_id: Self::parse_value("response_id", data)?,
                     }
                 }
+                "response.audio.done" => Self::ResponseAudioDone {
+                    content_index: Self::parse_value("content_index", data)?,
+                    output_index: Self::parse_value("output_index", data)?,
+                    item_id: Self::parse_value("item_id", data)?,
+                    response_id: Self::parse_value("response_id", data)?,
+                },
+                "response.audio_transcript.delta" => Self::ResponseAudioTranscriptDelta {
+                    delta: Self::parse_value("delta", data)?,
+                    content_index: Self::parse_value("content_index", data)?,
+                    output_index: Self::parse_value("output_index", data)?,
+                    response_id: Self::parse_value("response_id", data)?,
+                },
+                "response.audio_transcript.done" => Self::ResponseAudioTranscriptDone {
+                    transcript: Self::parse_value("transcript", data)?,
+                    content_index: Self::parse_value("content_index", data)?,
+                    output_index: Self::parse_value("output_index", data)?,
+                    item_id: Self::parse_value("item_id", data)?,
+                    response_id: Self::parse_value("response_id", data)?,
+                },
+                "response.done" => Self::ResponseDone(Self::parse_value("response", data)?),
                 _ => Self::None,
             },
             _ => Self::None,
