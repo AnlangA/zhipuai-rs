@@ -26,7 +26,7 @@ pub enum ZhipuApiError {
 
 impl Display for ZhipuApiError {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "RealtimeApiError: ")?;
+        write!(f, "ZhipuApiError: ")?;
         match self {
             Self::Decode(e) => Display::fmt(e, f),
             Self::InvalidHeader(e) => Display::fmt(e, f),
