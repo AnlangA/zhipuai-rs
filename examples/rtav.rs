@@ -1,10 +1,7 @@
 //! 实时音视频API示例
 
-use rodio::{OutputStream, Sink, Source};
-use std::{
-    io::{self, Write},
-    time::Duration,
-};
+use rodio::{buffer::SamplesBuffer, OutputStream, Sink};
+use std::io::{self, Write};
 use tokio::{fs::File, io::AsyncReadExt};
 use zhipuai_rs::prelude::*;
 
@@ -61,7 +58,7 @@ async fn main() -> anyhow::Result<()> {
 
         if let RealtimeEventData::ResponseAudioDelta { delta, .. } = event {
             println!("Audio data: {}", delta.len());
-            player.append(Pcm::new(delta, 24000));
+            player.append(samples::<1, 24000>(delta));
             continue;
         }
         println!("{:?}", event);
@@ -70,53 +67,16 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-struct Pcm {
-    data: Vec<u8>,
-    index: usize,
-    sample_rate: u32,
-}
-
-impl Pcm {
-    fn new(data: Vec<u8>, sample_rate: u32) -> Self {
-        Self {
-            data,
-            index: 0,
-            sample_rate,
-        }
-    }
-}
-
-impl Iterator for Pcm {
-    type Item = f32;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        if self.index >= self.data.len() {
-            return None;
-        }
-
-        let data = [self.data[self.index], self.data[self.index + 1]];
-        self.index += 2;
-        Some(i16::from_le_bytes(data) as f32 / i16::MAX as f32)
-    }
-}
-
-impl Source for Pcm {
-    fn current_frame_len(&self) -> Option<usize> {
-        Some(self.data.iter().len() / 2)
+#[inline]
+fn samples<const C: u16, const SR: u32>(data: Vec<u8>) -> SamplesBuffer<i16> {
+    let mut out = Vec::with_capacity(data.len() / size_of::<i16>());
+    let mut i = 0;
+    while i < data.len() {
+        out.push(i16::from_le_bytes([data[i], data[i + 1]]));
+        i += size_of::<i16>();
     }
 
-    fn channels(&self) -> u16 {
-        1
-    }
-
-    fn sample_rate(&self) -> u32 {
-        self.sample_rate
-    }
-
-    fn total_duration(&self) -> Option<Duration> {
-        self.current_frame_len()
-            .map(|i| Duration::from_secs(i as u64 / self.sample_rate as u64))
-    }
+    SamplesBuffer::new(C, SR, out)
 }
 
 // 用于从终端读取用户输入的函数
