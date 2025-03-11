@@ -223,6 +223,14 @@ impl Session {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Conversation {
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub object: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub id: String,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ConversationItem {
     #[serde(skip_serializing_if = "String::is_empty")]
     pub object: String,
