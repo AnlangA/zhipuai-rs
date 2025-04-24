@@ -7,7 +7,7 @@ async fn main() -> anyhow::Result<()> {
     let messages = Messages::new().add_message(chat_simple_message!("system", "Please think deeply before your response.")).
         add_message(chat_simple_message!("user", "一个袋子中有5个红球和3个蓝球,随机抽取2个球,抽到至少1个红球的概率为:"));
     
-    let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::GLMZeroPreview.into())
+    let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::GLM4Z1Air.into())
         .add_messages(messages)
         .stream_enable(true)
         .build();
@@ -28,9 +28,15 @@ async fn main() -> anyhow::Result<()> {
 }
 
 fn user_key() -> anyhow::Result<String> {
+    // 首先尝试从环境变量获取
+    if let Ok(key) = std::env::var("ZHIPU_API_KEY") {
+        println!("从环境变量:ZHIPU_API_KEY 获取到key");
+        return Ok(key);
+    }
+    // 如果环境变量不存在，则要求用户输入
     let mut input = String::new();
     print!("输入你的key: ");
-    io::stdout().flush()?; // 刷新标准输出，确保提示文字立即显示
+    io::stdout().flush()?;
     io::stdin().read_line(&mut input)?;
-    Ok(input.trim().to_string()) // 去除输入内容的首尾空白字符
+    Ok(input.trim().to_string())
 }
