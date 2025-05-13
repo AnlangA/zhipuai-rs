@@ -2,9 +2,11 @@ pub mod builder;
 pub mod chat;
 pub mod rtav;
 pub mod images;
+pub mod videos;
 
 use builder::Builder;
 use std::marker::PhantomData;
+
 
 pub struct BigModel<T> {
     _marker: PhantomData<T>,
