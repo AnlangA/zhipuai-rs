@@ -7,13 +7,13 @@ async fn main() -> anyhow::Result<()> {
     let api_key = user_key()?;
     
     let (api_url, request_json) = BigModel::<images::Images>::new(images::model::ImagesModelName::CogView3Flash.into())
-        .prompt("一只可爱的猫咪。")
+        .prompt("一只凶狠的猫咪。")
         .build();
     
     let response = post(api_url, api_key, request_json.to_json()).await?;
-
+    println!("come here post response");
     let api_response = images::response::images_response_context(response).await?;
-
+    println!("come here post response decode");
     let url = api_response.urls();
 
     println!("图片链接: {:?}", url);
