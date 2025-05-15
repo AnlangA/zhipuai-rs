@@ -3,8 +3,8 @@ use zhipuai_rs::prelude::*;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let api_key = user_key().unwrap();
-    let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::GLMZeroPreview.into())
+    let api_key = user_key()?;
+    let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::GlmZeroPreview.into())
         .add_message(Message::new(
             Role::System.into(),
             Some(Context::SimpleContexts(
@@ -38,6 +38,7 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
+//noinspection SpellCheckingInspection
 fn user_key() -> anyhow::Result<String> {
     // 首先尝试从环境变量获取
     if let Ok(key) = std::env::var("ZHIPU_API_KEY") {

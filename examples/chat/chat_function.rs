@@ -6,7 +6,7 @@ use zhipuai_rs::prelude::*;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let api_key = user_key().unwrap();
+    let api_key = user_key()?;
     let mut hash = HashMap::new();
     hash.insert(
         "起始地".to_string(),
@@ -26,7 +26,7 @@ async fn main() -> anyhow::Result<()> {
     );
     let parameters = Parameters::new(hash);
 
-    let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::GLM4Flash.into())
+    let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::Glm4Flash.into())
         .add_message(Message::new(
             Role::User.into(),
             Some(Context::simple_context("6月1日深圳到郴州的高铁")),
@@ -57,6 +57,7 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
+//noinspection SpellCheckingInspection
 fn user_key() -> anyhow::Result<String> {
     // 首先尝试从环境变量获取
     if let Ok(key) = std::env::var("ZHIPU_API_KEY") {

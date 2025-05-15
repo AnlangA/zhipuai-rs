@@ -28,9 +28,9 @@ impl From<Role> for String {
 impl AsRef<str> for Role {
     fn as_ref(&self) -> &str {
         match self {
-            Role::System => "system",
-            Role::User => "user",
-            Role::Assistant => "assistant",
+            Self::System => "system",
+            Self::User => "user",
+            Self::Assistant => "assistant",
         }
     }
 }
@@ -38,10 +38,21 @@ impl AsRef<str> for Role {
 impl fmt::Display for Role {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let role_str = match self {
-            Role::System => "system",
-            Role::User => "user",
-            Role::Assistant => "assistant",
+            Self::System => "system",
+            Self::User => "user",
+            Self::Assistant => "assistant",
         };
         write!(f, "{}", role_str)
+    }
+}
+
+impl From<&str> for Role {
+    fn from(value: &str) -> Self {
+        match value {
+            "user" => Self::User,
+            "assistant" => Self::Assistant,
+            "system" => Self::System,
+            _ => unimplemented!(),
+        }
     }
 }

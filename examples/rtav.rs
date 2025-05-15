@@ -1,22 +1,29 @@
-//! 实时音视频API示例
+//! 质朴AI实时音视频API示例
 
-use rodio::{buffer::SamplesBuffer, OutputStream, Sink};
+use rodio::{OutputStream, Sink, buffer::SamplesBuffer};
 use std::io::{self, Write};
-use tokio::{fs::File, io::AsyncReadExt};
+use tokio::fs::read;
 use zhipuai_rs::prelude::*;
 
+//noinspection SpellCheckingInspection
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let api_key = user_key().unwrap();
+    let api_key = user_key()?;
+    let (_stream, handle) = OutputStream::try_default()?;
+    let player = Sink::try_new(&handle)?;
+
+    // 演示server_vad模式下的音频和视频发送
     let (mut sink, mut stream) = start_realtime_session(&api_key).await?;
     sink.session_update(
         RealtimeSession::new()
             .with_input_audio_format("wav")
             .with_output_audio_format("pcm")
             .with_instructions("结合图中场景说说你的看法。")
-            .with_turn_detection(
-                RealtimeTurnDetection::new().with_vad_type(RealtimeVadType::ClientVad),
-            )
+            .with_turn_detection(RealtimeTurnDetection::new().with_server_vad())
+            .with_voice("xiaochen")
+            .with_temperature(0.6)
+            .with_max_response_output_tokens("80")
+            .with_modalities(&["text", "audio"])
             .with_beta_fields(
                 RealtimeBetaFields::new()
                     .with_chat_mode(RealtimeChatMode::VideoPassive)
@@ -25,31 +32,14 @@ async fn main() -> anyhow::Result<()> {
             ),
     )
     .await?;
-
-    let mut audio = Default::default();
-    File::open("examples/assets/audio.wav")
-        .await?
-        .read_to_end(&mut audio)
+    sink.input_audio_buffer_append(&read("examples/assets/audio.wav").await?)
         .await?;
-    let mut video_frame = Default::default();
-    File::open("examples/assets/video_frame.jpg")
-        .await?
-        .read_to_end(&mut video_frame)
+    sink.input_audio_buffer_append_video_frame(&read("examples/assets/video_frame.jpg").await?)
         .await?;
+    // sink.input_audio_buffer_clear().await?;
+    // sink.conversation_item_delete("1234").await?;
 
-    sink.input_audio_buffer_append(&audio).await?;
-    sink.input_audio_buffer_append_video_frame(&video_frame)
-        .await?;
-    sink.input_audio_buffer_commit().await?;
-    sink.conversation_item_create(RealtimeConversationItem::new().with_text("以梦想为主题。"))
-        .await?;
-    // sink.conversation_item_create(RealtimeConversationItem::new().with_function_call_output("梦想 (dream)")).await?;
-    sink.response_create().await?;
-    // sink.response_cancel().await?;
-
-    let (_stream, handle) = OutputStream::try_default().unwrap();
-    let player = Sink::try_new(&handle).unwrap();
-
+    // `next_data()`不能获取到event_id和timestamp信息，如果需要可以使用`next()`
     while let Some(event) = stream.next_data().await? {
         let event = event.resolve()?;
         if event.is_heartbeat() {
@@ -60,11 +50,72 @@ async fn main() -> anyhow::Result<()> {
             println!("Audio data: {}", delta.len());
             player.append(samples::<1, 24000>(delta));
             continue;
+        } else if let RealtimeEventData::ResponseDone(_) = event {
+            break;
         }
         println!("{:?}", event);
     }
 
-    Ok(())
+    // 演示tools调用
+    let (mut sink, mut stream) = start_realtime_session(&api_key).await?;
+    sink.session_update(
+        RealtimeSession::new()
+            .with_input_audio_format("wav")
+            .with_output_audio_format("pcm")
+            .with_turn_detection(RealtimeTurnDetection::new().with_client_vad())
+            .with_modalities(&["text", "audio"])
+            .with_tools(&[Function::new(
+                "get_location",
+                "获取当前的位置",
+                Parameters::new(Default::default()),
+            )])
+            .with_beta_fields(
+                RealtimeBetaFields::new()
+                    // 截止到2025-05-15，仅仅支持音频模式调用自定义函数
+                    .with_chat_mode(RealtimeChatMode::Audio)
+                    .with_tts_source("e2e")
+                    .with_auto_search(false),
+            ),
+    )
+    .await?;
+    sink.input_audio_buffer_append(&read("examples/assets/get_location.wav").await?)
+        .await?;
+    sink.input_audio_buffer_commit().await?;
+    sink.response_create().await?;
+    // sink.response_cancel().await?;
+    let mut is_function_called = false;
+    while let Some(event) = stream.next_data().await? {
+        let event = event.resolve()?;
+        if event.is_heartbeat() {
+            continue;
+        }
+
+        if let RealtimeEventData::ResponseAudioDelta { delta, .. } = event {
+            println!("Audio data: {}", delta.len());
+            player.append(samples::<1, 24000>(delta));
+            continue;
+        } else if let RealtimeEventData::ResponseFunctionCallArgumentsDone { ref name, .. } = event
+        {
+            is_function_called = name == "get_location";
+        } else if let RealtimeEventData::ResponseDone { .. } = event {
+            if is_function_called {
+                is_function_called = false;
+                // 请在response-done到达之后再上传函数调用结果
+                sink.conversation_item_create(
+                    RealtimeConversationItem::new()
+                        .with_role(Role::User)
+                        .with_function_call_output("    杭州"),
+                )
+                .await?;
+                sink.response_create().await?;
+            } else {
+                break;
+            }
+        }
+        println!("{:?}", event);
+    }
+
+    Ok(player.sleep_until_end())
 }
 
 #[inline]

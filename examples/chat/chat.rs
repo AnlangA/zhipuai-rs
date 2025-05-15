@@ -3,7 +3,7 @@ use zhipuai_rs::{chat_simple_message, prelude::*};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let api_key = user_key().unwrap();
+    let api_key = user_key()?;
 
     let mut messages = Messages::new()
         .add_message(chat_simple_message!(
@@ -18,7 +18,7 @@ async fn main() -> anyhow::Result<()> {
         .add_message(chat_simple_message!(Role::User, "专家你好"));
 
     loop {
-        let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::GLM4Flash.into())
+        let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::Glm4Flash250414.into())
             .add_messages(messages.clone())
             .build();
         println!("{:?}", request_json.to_json());
@@ -40,12 +40,13 @@ async fn main() -> anyhow::Result<()> {
         }
         print!("输入: ");
         let mut input = String::new();
-        io::stdout().flush().unwrap(); // 刷新标准输出，确保提示文字立即显示
-        io::stdin().read_line(&mut input).unwrap();
+        io::stdout().flush()?; // 刷新标准输出，确保提示文字立即显示
+        io::stdin().read_line(&mut input)?;
         messages = messages.add_message(chat_simple_message!("user", input));
     }
 }
 
+//noinspection SpellCheckingInspection
 // 用于从终端读取用户输入的函数
 fn user_key() -> anyhow::Result<String> {
     // 首先尝试从环境变量获取

@@ -5,7 +5,7 @@ use zhipuai_rs::prelude::*;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let api_key = user_key().unwrap();
+    let api_key = user_key()?;
 
     // 读取用户输入的文本
     let text_to_translate = read_user_input()?;
@@ -21,15 +21,6 @@ async fn main() -> Result<()> {
 }
 
 // 用于从终端读取用户输入的函数
-fn user_key() -> Result<String> {
-    let mut input = String::new();
-    print!("输入你的key: ");
-    io::stdout().flush()?; // 刷新标准输出，确保提示文字立即显示
-    io::stdin().read_line(&mut input)?;
-    Ok(input.trim().to_string()) // 去除输入内容的首尾空白字符
-}
-
-// 用于从终端读取用户输入的函数
 fn read_user_input() -> Result<String> {
     let mut input = String::new();
     print!("输入要润色的文本: ");
@@ -39,7 +30,7 @@ fn read_user_input() -> Result<String> {
 }
 
 async fn translate_text(api_key: &str, text: &str) -> Result<String> {
-    let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::GLM4Flash.into())
+    let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::Glm4Flash.into())
         .add_message(Message::new(
             Role::System.into(),
             Some(Context::SimpleContexts(
@@ -101,4 +92,19 @@ fn extract_content(input: &str) -> Result<String> {
     }
 
     Err(anyhow!("No content found after 'Content:'"))
+}
+
+//noinspection SpellCheckingInspection
+fn user_key() -> Result<String> {
+    // 首先尝试从环境变量获取
+    if let Ok(key) = std::env::var("ZHIPU_API_KEY") {
+        println!("从环境变量:ZHIPU_API_KEY 获取到key");
+        return Ok(key);
+    }
+    // 如果环境变量不存在，则要求用户输入
+    let mut input = String::new();
+    print!("输入你的key: ");
+    io::stdout().flush()?;
+    io::stdin().read_line(&mut input)?;
+    Ok(input.trim().to_string())
 }

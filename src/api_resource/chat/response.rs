@@ -92,6 +92,7 @@ pub async fn response_all(response: Response) -> Result<String, ZhipuApiError> {
 pub async fn chat_response_context(response: Response) -> Result<ChatApiResponse, ZhipuApiError> {
     if response.status().is_success() {
         let response_text = response.text().await?;
+        println!("{}", response_text);
         let api_response: ChatApiResponse = serde_json::from_str(&response_text)?;
         Ok(api_response)
     } else {

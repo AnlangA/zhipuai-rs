@@ -8,7 +8,7 @@ pub use crate::api_resource::{
         Event as RealtimeEvent, EventData as RealtimeEventData,
         InputTokenDetails as RealtimeInputTokenDetails,
         OutputTokenDetails as RealtimeOutputTokenDetails, Session as RealtimeSession,
-        TurnDetection as RealtimeTurnDetection, Usage as RealtimeUsage, VadType as RealtimeVadType,
+        TurnDetection as RealtimeTurnDetection, Usage as RealtimeUsage,
     },
     BigModel,
 };
