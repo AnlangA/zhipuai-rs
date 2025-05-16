@@ -33,8 +33,8 @@
   - [x] `cogview-4`
   - [x] `cogview-3-flash`
 - videos 系列
-  - [ ] `cogvideox`
-  - [ ] `cogvideox-flash`
+  - [x] `cogvideox`
+  - [x] `cogvideox-flash`
 - assistant 系列
   - [ ] `glm-4-assistant`
 - embeddings 系列
