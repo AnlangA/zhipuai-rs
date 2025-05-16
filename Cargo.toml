@@ -5,7 +5,7 @@ description = "zhipuai 's api of rust"
 documentation = "https://docs.rs/zhipuai-rs"
 repository  = "https://github.com/AnlangA/zhipuai-rs.git"
 license = "MIT"
-version = "0.1.14"
+version = "0.1.16"
 edition = "2024"
 
 [[example]]
@@ -58,17 +58,17 @@ path = "examples/videos/cogvideox2.rs"
 
 [dependencies]
 base64 = "0.22.1"
-serde = { version = "1.0.218", features = ["derive"] }
-tokio = { version = "1.43.0", features = ["full"] }
+serde = { version = "1.0.219", features = ["derive"] }
+tokio = { version = "1.45.0", features = ["full"] }
 tokio-tungstenite = { version = "0.26.2",features = ["native-tls"] }
-reqwest = { version = "0.12.12", features = ["json","stream"] }
-serde_json = "1.0.139"
+reqwest = { version = "0.12.15", features = ["json","stream"] }
+serde_json = "1.0.140"
 futures = "0.3.31"
-bytes = "1.10.0"
-pin-project = "1.1.9"
+bytes = "1.10.1"
+pin-project = "1.1.10"
 async-stream = "0.3.6"
 regex = "1.11.1"
 
 [dev-dependencies]
 rodio = "0.20.1"
-anyhow = "1.0.96"
+anyhow = "1.0.98"

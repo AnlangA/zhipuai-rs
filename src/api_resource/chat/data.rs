@@ -62,7 +62,7 @@ impl Message {
     }
 }
 
-/// making generate Messages esay
+/// making generate Messages essay
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Messages {
     pub messages: Vec<Message>,
@@ -336,9 +336,9 @@ pub struct ToolCall {
     id: Option<String>,
     #[serde(rename = "type")]
     call_type: Option<String>,
-    function: Option<FunctionRespon>,
-    drawing_tool: Option<DrawingToolRespon>,
-    index: Option<String>,
+    function: Option<FunctionRespond>,
+    drawing_tool: Option<DrawingToolRespond>,
+    index: Option<u32>,
 }
 
 impl fmt::Display for ToolCall {
@@ -365,12 +365,12 @@ impl fmt::Display for ToolCall {
     }
 }
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct FunctionRespon {
+pub struct FunctionRespond {
     name: String,
     #[serde(deserialize_with = "deserialize_arguments")]
     arguments: HashMap<String, String>, // 直接使用 HashMap 来解析 arguments 字段
 }
-impl fmt::Display for FunctionRespon {
+impl fmt::Display for FunctionRespond {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Function Name: {}\nArguments:", self.name)?;
         for (key, value) in &self.arguments {
@@ -393,6 +393,7 @@ where
 /// function call data object
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Function {
+    r#type: String,
     /// The name of the function
     name: String,
     /// The description of the function
@@ -406,9 +407,10 @@ pub struct Function {
 impl Function {
     pub fn new(name: &str, description: &str, parameters: Parameters) -> Self {
         Self {
+            r#type: "function".to_string(),
             name: name.to_string(),
             description: description.to_string(),
-            parameters: parameters,
+            parameters,
         }
     }
 }
@@ -427,7 +429,7 @@ impl Parameters {
         let required = properties.keys().map(|k| k.to_string()).collect();
         Self {
             param_type: "object".to_string(),
-            properties: properties,
+            properties,
             required: Some(required),
         }
     }
@@ -489,7 +491,7 @@ impl WebSearch {
             search_prompt: None,
         }
     }
-    /// configure the key words of search result
+    /// configure the keywords of search result
     pub fn search_query(mut self, search_query: &str) -> Self {
         self.search_query = Some(search_query.to_string());
         self
@@ -508,11 +510,11 @@ impl WebSearch {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct CodeInterPerter{
-    /// Whether to enable code sandbox. if enable, the server will execute the code in a sandbox environment
+pub struct CodeInterPerter {
+    /// Whether to enable code sandbox. if enabled, the server will execute the code in a sandbox environment
     sandbox: SandBox,
     #[serde(skip_serializing_if = "Option::is_none")]
-    file_ids: Option<Vec<String>>
+    file_ids: Option<Vec<String>>,
 }
 
 impl Default for CodeInterPerter {
@@ -541,9 +543,9 @@ impl CodeInterPerter {
     }
 }
 
-/// Specify the code sandbox environment. auto by default, which means automatically calling the sandbox environment 
-/// to execute code. After setting `sandbox = none `, the sandbox environment is not enabled. 
-/// After the code is generated, the returned status is ` status = requires_action `, 
+/// Specify the code sandbox environment. auto by default, which means automatically calling the sandbox environment
+/// to execute code. After setting `sandbox = none `, the sandbox environment is not enabled.
+/// After the code is generated, the returned status is ` status = requires_action `,
 /// requiring the user to submit the code execution result.
 #[derive(Debug, Serialize, Deserialize, Clone, Copy)]
 pub enum SandBox {
@@ -558,22 +560,20 @@ pub enum SandBox {
 pub struct DrawingTool;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct DrawingToolRespon{
+pub struct DrawingToolRespond {
     input: Option<String>,
     outputs: Option<Vec<Output>>,
 }
 
-impl fmt::Display  for DrawingToolRespon {
+impl fmt::Display for DrawingToolRespond {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut tool_data = String::new();
         if let Some(data) = &self.input {
             tool_data = format!("input: {}", data);
         }
         if let Some(outputs) = &self.outputs {
-            let image_urls: Vec<String> = outputs
-                .iter()
-                .map(|output| output.image.clone())
-                .collect();
+            let image_urls: Vec<String> =
+                outputs.iter().map(|output| output.image.clone()).collect();
             tool_data = format!("outputs: {:?}", image_urls);
         }
         write!(f, "{}", tool_data)
@@ -589,7 +589,7 @@ struct Output {
 /// By default, `browser` = auto automatically browses the web pages for the links in the search results and the entered URLs.
 /// If only the summary information of the search is needed, and the browsing tool is not used, it can be disabled by setting `browser`` = none.
 #[derive(Debug, Serialize, Deserialize, Clone, Copy)]
-pub struct WebBrowser{
+pub struct WebBrowser {
     browser: Browser,
 }
 
@@ -599,7 +599,6 @@ impl Default for WebBrowser {
             browser: Browser::Auto,
         }
     }
-    
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Copy)]

@@ -3,7 +3,7 @@ use zhipuai_rs::prelude::*;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let api_key = user_key().unwrap();
+    let api_key = user_key()?;
     let prompt = "
 
     # 以下是来自互联网的信息：
@@ -15,7 +15,7 @@ async fn main() -> anyhow::Result<()> {
     根据最新发布的信息回答用户问题，当回答引用了参考信息时，必须在句末使用对应的[ref_序号]来标明参考信息来源。
     
     ";
-    let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::GLM4Flash.into())
+    let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::Glm4Flash.into())
         .add_message(Message::new(
             Role::System.into(),
             Some(Context::SimpleContexts(
@@ -62,6 +62,7 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
+//noinspection SpellCheckingInspection
 fn user_key() -> anyhow::Result<String> {
     // 首先尝试从环境变量获取
     if let Ok(key) = std::env::var("ZHIPU_API_KEY") {

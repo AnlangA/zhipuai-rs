@@ -7,8 +7,8 @@ mod value;
 
 use crate::error::ZhipuApiError;
 use futures::{
-    stream::{SplitSink, SplitStream},
     Sink, SinkExt, Stream, StreamExt,
+    stream::{SplitSink, SplitStream},
 };
 use pin_project::pin_project;
 use std::{
@@ -17,9 +17,8 @@ use std::{
 };
 use tokio::net::TcpStream;
 use tokio_tungstenite::{
-    connect_async,
-    tungstenite::{client::IntoClientRequest, http::StatusCode, Message},
-    MaybeTlsStream, WebSocketStream,
+    MaybeTlsStream, WebSocketStream, connect_async,
+    tungstenite::{Message, client::IntoClientRequest, http::StatusCode},
 };
 pub use {event::*, value::*};
 
@@ -73,6 +72,12 @@ impl SessionSink {
         self.send(Event::new_input_audio_buffer_commit()?).await
     }
 
+    /// 客户端发送 input_audio_buffer.clear 事件用于清除缓冲区中的音频数据。
+    /// 服务端使用 input_audio_buffer.cleared 事件进行响应。
+    pub async fn input_audio_buffer_clear(&mut self) -> Result<(), ZhipuApiError> {
+        self.send(Event::new_input_audio_buffer_clear()?).await
+    }
+
     /// 向对话上下文中添加一个item，包含消息、函数调用响应结果，可以讲此部分结果放入对话历史（session context/history）。如果传入文本为空或function.call.item为空时，会发送一个错误事件；
     ///
     /// # 参数
@@ -82,6 +87,15 @@ impl SessionSink {
         item: &ConversationItem,
     ) -> Result<(), ZhipuApiError> {
         self.send(Event::new_conversation_item_create(item)?).await
+    }
+
+    /// 删除会话历史中的一轮次会话 conversation.item.delete
+    ///
+    /// # 参数
+    /// * `item_id` 对话项目ID
+    pub async fn conversation_item_delete(&mut self, item_id: &str) -> Result<(), ZhipuApiError> {
+        self.send(Event::new_conversation_item_delete(item_id)?)
+            .await
     }
 
     /// 此事件为创建服务器响应，同时也表示触发模型推理。ServerVAD模式服务器会自动创建响应，ClientVAD模式进行视频通话时，需以这个时间点的视频帧和音频传给模型；
