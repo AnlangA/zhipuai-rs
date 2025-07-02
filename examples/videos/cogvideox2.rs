@@ -8,7 +8,7 @@ use futures::stream::{self, StreamExt};
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     // 获取 API 密钥
-    let api_key = user_key().unwrap();
+    let api_key = user_key()?;
     
     // 构建视频生成请求
     let (api_url, request_json) = BigModel::<videos::Videos>::new(videos::model::VideosModelName::Cogvideox2.into())
@@ -34,7 +34,7 @@ async fn main() -> anyhow::Result<()> {
         let api_key = api_key.clone();
         async move {
             // 构建异步请求
-            let (api_url, request_body) = BigModel::<videos::Videos>::new(videos::model::VideosModelName::Cogvideox2.into())
+            let (api_url, _) = BigModel::<videos::Videos>::new(videos::model::VideosModelName::Cogvideox2.into())
                 .prompt("")
                 .response_id(&task_id)
                 .build_response();
@@ -81,10 +81,18 @@ async fn main() -> anyhow::Result<()> {
     }
     Ok(())
 }
+
+// 用于从终端读取用户输入的函数
 fn user_key() -> anyhow::Result<String> {
+    // 首先尝试从环境变量获取
+    if let Ok(key) = std::env::var("ZHIPU_API_KEY") {
+        println!("从环境变量:ZHIPU_API_KEY 获取到key");
+        return Ok(key);
+    }
+    // 如果环境变量不存在，则要求用户输入
     let mut input = String::new();
     print!("输入你的key: ");
-    io::stdout().flush()?; // 刷新标准输出，确保提示文字立即显示
+    io::stdout().flush()?;
     io::stdin().read_line(&mut input)?;
-    Ok(input.trim().to_string()) // 去除输入内容的首尾空白字符
+    Ok(input.trim().to_string())
 }
