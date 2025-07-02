@@ -12,7 +12,7 @@ async fn main() -> anyhow::Result<()> {
         .read_to_end(&mut data)
         .await?;
     let image_url = BASE64_STANDARD.encode(&data);
-    let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::Glm4VFlash.into())
+    let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::Glm41VThinkingFlashX.into())
         .add_message(Message::new(
             Role::User.into(),
             Some(
