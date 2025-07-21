@@ -11,15 +11,18 @@
 模型api实现进展：
 - chat系列
   - [x] `glm-4-plus`
-  - [x] `glm-4-air-0111`
+  - [x] `glm-4-air-250414`
   - [x] `glm-4-air-x`
   - [x] `glm-4-long`
   - [x] `glm-4-flash-x`
   - [x] `glm-4-flash`
+  - [x] `glm-4-flash-250414`
   - [x] `glm-4v-plus-0111`
   - [x] `glm-4v-plus`
   - [x] `glm-4v`
   - [x] `glm-4v-flash`
+  - [x] `GLM-4.1V-Thinking-Flash`
+  - [x] `GLM-4.1V-Thinking-FlashX`
   - [x] `glm-zero-preview`
   - [x] `glm-z1-air`
   - [x] `glm-z1-airx`
