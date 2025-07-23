@@ -26,6 +26,9 @@ pub struct VideosApiRequest {
     /// fps
     #[serde(skip_serializing_if = "Option::is_none")]
     fps: Option<VideoFPS>,
+    /// duration
+    #[serde(skip_serializing_if = "Option::is_none")]
+    duration: Option<VideoDuration>,
     /// request_id
     #[serde(skip_serializing_if = "Option::is_none")]
     request_id: Option<String>,
@@ -54,6 +57,8 @@ pub struct VideosApiRequestBuilder {
     size: Option<VideoSize>,
     /// fps
     fps: Option<VideoFPS>,
+    /// duration
+    duration: Option<VideoDuration>,
     /// request_id
     request_id: Option<String>,
     /// user_id
@@ -83,6 +88,8 @@ impl VideosApiRequestBuilder {
             size: None,
             // Initialize the `fps` field as `None`, indicating no fps is set initially.
             fps: None,
+            // Initialize the `duration` field as `None`, indicating no duration is set initially.
+            duration: None,
             // Initialize the `request_id` field as `None`, indicating no request ID is set initially.
             request_id: None,
             // Initialize the `user_id` field as `None`, indicating no user ID is set initially.
@@ -140,6 +147,14 @@ impl VideosApiRequestBuilder {
         self
     }
 
+    pub fn duration(mut self, duration: VideoDuration) -> Self {
+        // Assign the provided `duration` to the struct's `duration` field.
+        // Convert the string slice to a `String` type and wrap it in a `Some` variant of the `Option` enum.
+        self.duration = Some(duration);
+        // Return the modified instance of the struct.
+        self
+    }
+
     pub fn request_id(mut self, request_id: &str) -> Self {
         // Assign the provided `request_id` to the struct's `request_id` field.
         // Convert the string slice to a `String` type and wrap it in a `Some` variant of the `Option` enum.
@@ -178,6 +193,7 @@ impl VideosApiRequestBuilder {
                 image_url: self.image_url,
                 size: self.size,
                 fps: self.fps,
+                duration: self.duration,
                 request_id: self.request_id,
                 user_id: self.user_id,
             },

@@ -25,7 +25,6 @@ pub enum ChatModelName {
     Glm4AllTools,
     CodeGeeX,
     CharGlm4,
-    Emohaa,
 }
 
 impl fmt::Display for ChatModelName {
@@ -52,8 +51,7 @@ impl fmt::Display for ChatModelName {
             Self::Glm4Voice => write!(f, "glm-4-voice"),
             Self::Glm4AllTools => write!(f, "glm-4-alltools"),
             Self::CodeGeeX => write!(f, "codegeex-4"),
-            Self::CharGlm4 => write!(f, "char-glm-4"),
-            Self::Emohaa => write!(f, "emohaa"),
+            Self::CharGlm4 => write!(f, "charglm-4"),
         }
     }
 }
@@ -82,8 +80,7 @@ impl From<ChatModelName> for &'static str {
             ChatModelName::Glm4Voice => "glm-4-voice",
             ChatModelName::Glm4AllTools => "glm-4-alltools",
             ChatModelName::CodeGeeX => "codegeex-4",
-            ChatModelName::CharGlm4 => "char-glm-4",
-            ChatModelName::Emohaa => "emohaa",
+            ChatModelName::CharGlm4 => "charglm-4",
         }
     }
 }

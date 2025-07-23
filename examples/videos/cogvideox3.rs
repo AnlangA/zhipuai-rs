@@ -12,10 +12,11 @@ async fn main() -> anyhow::Result<()> {
 
     // 构建视频生成请求
     let (api_url, request_json) =
-        BigModel::<videos::Videos>::new(videos::model::VideosModelName::Cogvideox2.into())
+        BigModel::<videos::Videos>::new(videos::model::VideosModelName::Cogvideox3.into())
             .prompt("用刀切铁块，丝滑切开。解压视频")
             .size(videos::VideoSize::Size3840x2160)
             .fps(videos::VideoFPS::VideoFps60)
+            .duration(videos::VideoDuration::VideoDuration10)
             .response_id("")
             .build();
 

@@ -64,6 +64,10 @@ path = "examples/chat/math_solve.rs"
 name = "chat_play"
 path = "examples/chat/chat_play.rs"
 
+[[example]]
+name = "cogvideox3"
+path = "examples/videos/cogvideox3.rs"
+
 [dependencies]
 base64 = "0.22.1"
 serde = { version = "1.0.219", features = ["derive"] }
