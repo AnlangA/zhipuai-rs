@@ -30,8 +30,8 @@
   - [x] `glm-4-voice`
   - [x] `glm-4-alltools`
   - [x] `codegeex-4`
-  - [x] `char-glm-4`
-  - [x] `emohaa`
+  - [x] `charglm-4`
+  - [ ] `emohaa`
 - realtime 系列
   - [x] `glm-4-realtime`
   - [ ] `glm-4-voice`
@@ -39,7 +39,8 @@
   - [x] `cogview-4`
   - [x] `cogview-3-flash`
 - videos 系列
-  - [x] `cogvideox`
+  - [x] `cogvideox-2`
+  - [x] `cogvideox-3`
   - [x] `cogvideox-flash`
 - assistant 系列
   - [ ] `glm-4-assistant`
