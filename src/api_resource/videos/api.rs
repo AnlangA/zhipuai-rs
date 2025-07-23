@@ -6,7 +6,7 @@ const API_URL_ASYNC: &str = "https://open.bigmodel.cn/api/paas/v4/async-result";
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[non_exhaustive]
-pub struct VideosApiRequest{
+pub struct VideosApiRequest {
     /// model name
     model: String,
     /// prompt text
@@ -60,7 +60,6 @@ pub struct VideosApiRequestBuilder {
     user_id: Option<String>,
     /// response_id
     response_id: String,
-
 }
 
 impl VideosApiRequestBuilder {
@@ -147,7 +146,7 @@ impl VideosApiRequestBuilder {
         self.request_id = Some(request_id.to_string());
         // Return the modified instance of the struct.
         self
-    }  
+    }
 
     pub fn user_id(mut self, user_id: &str) -> Self {
         // Assign the provided `user_id` to the struct's `user_id` field.
@@ -181,7 +180,7 @@ impl VideosApiRequestBuilder {
                 fps: self.fps,
                 request_id: self.request_id,
                 user_id: self.user_id,
-            }
+            },
         )
     }
 
@@ -191,11 +190,10 @@ impl VideosApiRequestBuilder {
             api_url,
             VideosApiAsynRequest {
                 id: self.response_id,
-            }
-
+            },
         )
     }
-}// Implement the `Build` trait for the `VideosApiRequestBuilder` struct.
+} // Implement the `Build` trait for the `VideosApiRequestBuilder` struct.
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[non_exhaustive]

@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 
-
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum VideoSize {
     #[serde(rename = "3840x2160")]
@@ -19,20 +18,18 @@ pub enum VideoSize {
     Size720x480,
 }
 
-
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum VideoQuality {
     #[serde(rename = "speed")]
-    VideoSpeed, 
+    VideoSpeed,
     #[serde(rename = "quality")]
-    VideoQuality, 
+    VideoQuality,
 }
-
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum VideoFPS {
-    VideoFps30, 
-    VideoFps60, 
+    VideoFps30,
+    VideoFps60,
 }
 
 impl VideoFPS {
@@ -43,4 +40,3 @@ impl VideoFPS {
         }
     }
 }
-

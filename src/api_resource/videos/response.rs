@@ -1,9 +1,7 @@
 ///! response of chat api
-
 use crate::error::ZhipuApiError;
 use reqwest::Response;
 use serde::{Deserialize, Serialize};
-
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct VideosChatApiResponse {
@@ -31,12 +29,14 @@ impl VideosChatApiResponse {
     }
 }
 
-pub async fn videos_response_context(response: Response) -> Result<VideosChatApiResponse, ZhipuApiError> {
+pub async fn videos_response_context(
+    response: Response,
+) -> Result<VideosChatApiResponse, ZhipuApiError> {
     if response.status().is_success() {
         let response = response.text().await?;
         let response: VideosChatApiResponse = serde_json::from_str(&response)?;
         Ok(response)
-    }else {
+    } else {
         Err(ZhipuApiError::StatusCode(format!(
             "Failed to fetch data: {}",
             response.status()
@@ -44,14 +44,12 @@ pub async fn videos_response_context(response: Response) -> Result<VideosChatApi
     }
 }
 
-
 #[derive(Debug, Serialize, Deserialize)]
 pub struct VideosChatApiAsynResponse {
     model: Option<String>,
     video_result: Option<Vec<Video>>,
     request_id: Option<String>,
     task_status: Option<String>,
-    
 }
 
 impl VideosChatApiAsynResponse {
@@ -60,7 +58,6 @@ impl VideosChatApiAsynResponse {
     }
     pub fn video_result(&self) -> &[Video] {
         self.video_result.as_deref().unwrap_or(&[])
-
     }
     pub fn request_id(&self) -> String {
         self.request_id.as_deref().unwrap_or_default().to_string()
@@ -68,11 +65,7 @@ impl VideosChatApiAsynResponse {
     pub fn task_status(&self) -> String {
         self.task_status.as_deref().unwrap_or_default().to_string()
     }
-
 }
-
-
-
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Video {
@@ -89,17 +82,17 @@ impl Video {
     }
 }
 
-pub async fn videos_asyn_response_context(response: Response) -> Result<VideosChatApiAsynResponse, ZhipuApiError> {
+pub async fn videos_asyn_response_context(
+    response: Response,
+) -> Result<VideosChatApiAsynResponse, ZhipuApiError> {
     if response.status().is_success() {
         let response = response.text().await?;
         let response: VideosChatApiAsynResponse = serde_json::from_str(&response)?;
         Ok(response)
-    }else {
+    } else {
         Err(ZhipuApiError::StatusCode(format!(
             "Failed to fetch data: {}",
             response.status()
         )))
     }
 }
-
-

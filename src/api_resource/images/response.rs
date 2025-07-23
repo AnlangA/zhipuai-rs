@@ -1,5 +1,4 @@
 ///! response of chat api
-
 use crate::error::ZhipuApiError;
 use reqwest::Response;
 use serde::{Deserialize, Serialize};
@@ -8,7 +7,7 @@ use serde::{Deserialize, Serialize};
 pub struct ImagesChatApiResponse {
     created: usize,
     data: Vec<Url>,
-    content_filter: Option<Vec<ContentFilter>>
+    content_filter: Option<Vec<ContentFilter>>,
 }
 
 impl ImagesChatApiResponse {
@@ -22,25 +21,26 @@ impl ImagesChatApiResponse {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Url {
-    url: String
+    url: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ContentFilter {
     role: String,
-    level: usize
+    level: usize,
 }
 
-pub async fn images_response_context(response: Response) -> Result<ImagesChatApiResponse, ZhipuApiError> {
+pub async fn images_response_context(
+    response: Response,
+) -> Result<ImagesChatApiResponse, ZhipuApiError> {
     if response.status().is_success() {
         let response = response.text().await?;
         let response: ImagesChatApiResponse = serde_json::from_str(&response)?;
         Ok(response)
-    }else {
+    } else {
         Err(ZhipuApiError::StatusCode(format!(
             "Failed to fetch data: {}",
             response.status()
         )))
     }
 }
-

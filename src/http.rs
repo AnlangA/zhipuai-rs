@@ -22,7 +22,6 @@ pub async fn post<'a>(
     response
 }
 
-
 pub async fn get<'a>(
     api_url: impl Into<Cow<'a, str>>,
     api_key: impl Into<Cow<'a, str>>,

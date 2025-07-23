@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use regex::RegexBuilder;
 use std::io::{self, Write};
 use zhipuai_rs::prelude::*;

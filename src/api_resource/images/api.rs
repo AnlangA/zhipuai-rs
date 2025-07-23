@@ -89,13 +89,13 @@ impl ImagesApiRequestBuilder {
         // 1. A new `String` created from the constant `API_URL`.
         // 2. The current instance (`self`) of the struct, cast to `ImagesApiRequest`.
         (
-            API_URL.to_string(), 
-            ImagesApiRequest{
+            API_URL.to_string(),
+            ImagesApiRequest {
                 model: self.model,
                 prompt: self.prompt,
                 size: self.size,
                 user_id: self.user_id,
-            }
+            },
         )
     }
 }

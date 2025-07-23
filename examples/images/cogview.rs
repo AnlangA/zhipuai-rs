@@ -1,15 +1,16 @@
+use std::io::{self, Write};
 use zhipuai_rs::api_resource::images;
 use zhipuai_rs::prelude::*;
-use std::io::{self, Write};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let api_key = user_key()?;
-    
-    let (api_url, request_json) = BigModel::<images::Images>::new(images::model::ImagesModelName::CogView3Flash.into())
-        .prompt("一只凶狠的猫咪。")
-        .build();
-    
+
+    let (api_url, request_json) =
+        BigModel::<images::Images>::new(images::model::ImagesModelName::CogView3Flash.into())
+            .prompt("一只凶狠的猫咪。")
+            .build();
+
     let response = post(api_url, api_key, request_json.to_json()).await?;
     println!("come here post response");
     let api_response = images::response::images_response_context(response).await?;

@@ -1,12 +1,19 @@
 use std::io::{self, Write};
-use zhipuai_rs::prelude::*;
 use zhipuai_rs::chat_simple_message;
+use zhipuai_rs::prelude::*;
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let api_key = user_key()?;
-    let messages = Messages::new().add_message(chat_simple_message!("system", "Please think deeply before your response.")).
-        add_message(chat_simple_message!("user", "一个袋子中有5个红球和3个蓝球,随机抽取2个球,抽到至少1个红球的概率为:"));
-    
+    let messages = Messages::new()
+        .add_message(chat_simple_message!(
+            "system",
+            "Please think deeply before your response."
+        ))
+        .add_message(chat_simple_message!(
+            "user",
+            "一个袋子中有5个红球和3个蓝球,随机抽取2个球,抽到至少1个红球的概率为:"
+        ));
+
     let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::GlmZ1Flash.into())
         .add_messages(messages)
         .stream_enable(true)

@@ -9,7 +9,6 @@ pub enum ImagesModelName {
     CogView3Flash,
 }
 
-
 impl fmt::Display for ImagesModelName {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {

@@ -9,7 +9,6 @@ pub enum VideosModelName {
     CogvideoxFlash,
 }
 
-
 impl fmt::Display for VideosModelName {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {

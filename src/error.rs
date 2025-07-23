@@ -1,6 +1,6 @@
 use crate::api_resource::rtav::Error as RealtimeError;
 use base64::DecodeError;
-use reqwest::{header::InvalidHeaderValue, Error as ReqwestError};
+use reqwest::{Error as ReqwestError, header::InvalidHeaderValue};
 use serde_json::Error as JsonError;
 use std::{
     error::Error,
