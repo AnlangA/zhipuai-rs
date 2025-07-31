@@ -25,6 +25,11 @@ pub enum ChatModelName {
     Glm4AllTools,
     CodeGeeX,
     CharGlm4,
+    Glm4p5,
+    Glm4p5Air,
+    Glm4p5X,
+    Glm4p5AirX,
+    Glm4p5Flash,
 }
 
 impl fmt::Display for ChatModelName {
@@ -52,6 +57,11 @@ impl fmt::Display for ChatModelName {
             Self::Glm4AllTools => write!(f, "glm-4-alltools"),
             Self::CodeGeeX => write!(f, "codegeex-4"),
             Self::CharGlm4 => write!(f, "charglm-4"),
+            Self::Glm4p5 => write!(f, "glm-4.5"),
+            Self::Glm4p5Air => write!(f, "glm-4.5-air"),
+            Self::Glm4p5X => write!(f, "glm-4.5-x"),
+            Self::Glm4p5AirX => write!(f, "glm-4.5-airx"),
+            Self::Glm4p5Flash => write!(f, "glm-4.5-flash"),
         }
     }
 }
@@ -81,6 +91,11 @@ impl From<ChatModelName> for &'static str {
             ChatModelName::Glm4AllTools => "glm-4-alltools",
             ChatModelName::CodeGeeX => "codegeex-4",
             ChatModelName::CharGlm4 => "charglm-4",
+            ChatModelName::Glm4p5 => "glm-4.5",
+            ChatModelName::Glm4p5Air => "glm-4.5-air",
+            ChatModelName::Glm4p5X => "glm-4.5-x",
+            ChatModelName::Glm4p5AirX => "glm-4.5-airx",
+            ChatModelName::Glm4p5Flash => "glm-4.5-flash",
         }
     }
 }

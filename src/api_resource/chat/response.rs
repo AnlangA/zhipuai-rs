@@ -7,6 +7,7 @@ use futures::StreamExt;
 use reqwest::Response;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use log::info;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ChatApiResponse {
@@ -92,7 +93,7 @@ pub async fn response_all(response: Response) -> Result<String, ZhipuApiError> {
 pub async fn chat_response_context(response: Response) -> Result<ChatApiResponse, ZhipuApiError> {
     if response.status().is_success() {
         let response_text = response.text().await?;
-        println!("{}", response_text);
+        info!("{}", response_text);
         let api_response: ChatApiResponse = serde_json::from_str(&response_text)?;
         Ok(api_response)
     } else {

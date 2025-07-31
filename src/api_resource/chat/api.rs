@@ -25,6 +25,9 @@ pub struct ChatApiRequest {
     /// 【WARNING】: You cant not enable it when using `function`。
     #[serde(skip_serializing_if = "Option::is_none")]
     stream: Option<bool>,
+    /// This parameter configuration is only supported by models of the GLM-4.5 version and above. It controls whether the large model enables chain-of-thought reasoning.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    thinking: Option<Thinking>,
     /// The temperature parameter controls the randomness of the model's output. Higher values result in more random outputs.
     /// This parameter is only effective when [do_sample](#do_sample) is true.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -71,6 +74,8 @@ pub struct ChatApiRequestBuilder {
     do_sample: Option<bool>,
     /// If set to true, the response will be streamed back in chunks.
     stream: Option<bool>,
+    /// This parameter configuration is only supported by models of the GLM-4.5 version and above. It controls whether the large model enables chain-of-thought reasoning.
+    thinking: Option<Thinking>,
     /// The temperature parameter controls the randomness of the model's output. Higher values result in more random outputs.
     /// This parameter is only effective when [do_sample](#do_sample) is true.
     temperature: Option<f32>,
@@ -99,6 +104,7 @@ impl ChatApiRequestBuilder {
             user_id: None,
             do_sample: None,
             stream: None,
+            thinking: None,
             temperature: None,
             top_p: None,
             max_tokens: None,
@@ -173,7 +179,40 @@ impl ChatApiRequestBuilder {
         self.stream = Some(stream);
         self
     }
-
+    /// Enable chain-of-thought reasoning for the model.
+    /// This parameter configuration is only supported by models of the GLM-4.5 version and above.
+    /// When enabled, the model will show its reasoning process before providing the final answer.
+    /// default: Some(Thinking::Enable)
+    /// example:
+    /// ```ignore
+    /// let mut builder = ChatApiRequestBuilder::new("glm-4.5")
+    ///                  .request_id("1234567890")
+    ///                  .user_id("1234567890")
+    ///                  .do_sample_enable(true)
+    ///                  .stream_enable(true)
+    ///                  .thinking_enable();
+    /// ```
+    pub fn thinking_enable(&mut self) -> &mut Self {
+        self.thinking = Some(Thinking::enable());
+        self
+    }
+    /// Disable chain-of-thought reasoning for the model.
+    /// This parameter configuration is only supported by models of the GLM-4.5 version and above.
+    /// When disabled, the model will provide direct answers without showing the reasoning process.
+    /// default: Some(Thinking::Enable)
+    /// example:
+    /// ```ignore
+    /// let mut builder = ChatApiRequestBuilder::new("glm-4.5")
+    ///                  .request_id("1234567890")
+    ///                  .user_id("1234567890")
+    ///                  .do_sample_enable(true)
+    ///                  .stream_enable(true)
+    ///                  .thinking_disable();
+    /// ```
+    pub fn thinking_disable(&mut self) -> &mut Self {
+        self.thinking = Some(Thinking::disable());
+        self
+    }
     /// set temperature
     /// default: None。**when it is `None`, the model will use the default value : 0.95**
     /// example: 0.95
@@ -320,6 +359,7 @@ impl ChatApiRequestBuilder {
                 user_id: self.user_id.clone(),
                 do_sample: self.do_sample,
                 stream: self.stream,
+                thinking: self.thinking.clone(),
                 temperature: self.temperature,
                 top_p: self.top_p,
                 max_tokens: self.max_tokens,

@@ -146,7 +146,7 @@ mod tests {
         };
 
         let json = serde_json::to_string(&config).unwrap();
-        println!("Serialized config: {}", json);
+        info!("Serialized config: {}", json);
 
         // 验证 fps 字段被序列化为数字
         assert!(json.contains("\"fps\":60"));
