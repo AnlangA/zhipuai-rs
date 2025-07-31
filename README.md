@@ -31,6 +31,11 @@
   - [x] `glm-4-alltools`
   - [x] `codegeex-4`
   - [x] `charglm-4`
+  - [x] `glm-4.5`
+  - [x] `glm-4.5-air`
+  - [x] `glm-4.5-x`
+  - [x] `glm-4.5-airx`
+  - [x] `glm-4.5-flash`
   - [ ] `emohaa`
 - realtime 系列
   - [x] `glm-4-realtime`
