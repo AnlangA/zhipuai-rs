@@ -26,8 +26,7 @@ pub enum VideoQuality {
     VideoQuality,
 }
 
-#[derive(Debug, Clone)]
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(into = "u32", from = "u32")]
 pub enum VideoFPS {
     VideoFps30,
@@ -79,10 +78,10 @@ impl From<u32> for VideoDuration {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
+    use log::info;
     use serde_json;
 
     #[test]

@@ -36,9 +36,11 @@
   - [x] `glm-4.5-x`
   - [x] `glm-4.5-airx`
   - [x] `glm-4.5-flash`
+  - [x] `glm-4.5v`
   - [ ] `emohaa`
 - realtime 系列
-  - [x] `glm-4-realtime`
+  - [x] `glm-realtime-air`
+  - [x] `glm-realtime-flash`
   - [ ] `glm-4-voice`
 - images 系列
   - [x] `cogview-4`

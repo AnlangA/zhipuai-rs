@@ -173,8 +173,17 @@ pub enum EventData {
     /// 写入音频缓冲区的语音转文本的结果。语音转文本与响应创建异步运行，该事件可能发生在响应事件之前或者之后；
     ConversationItemInputAudioTranscriptionCompleted {
         content_index: u32,
+        /// 包含音频的用户消息项的 ID。
         item_id: String,
         transcript: String,
+    },
+    /// 配置了输入音频听录并且用户消息的听录请求失败时，系统会返回服务器 conversation.item.input_audio_transcription.failed 事件。 此事件是与其他 error 事分开的，以便客户端能够识别相关项。
+    ConversationItemInputAudioTranscriptionFailed {
+        /// 包含音频的内容部分的索引
+        content_index: u32,
+        /// 包含音频的用户消息项的ID
+        item_id: String,
+        error: Error,
     },
     /// 客户端使用 conversation.item.delete 事件删除对话项目时，系统会返回服务器 conversation.item.deleted。
     ConversationItemDeleted { item_id: String },
@@ -350,6 +359,13 @@ impl EventData {
                         content_index: Self::parse_value("content_index", data)?,
                         item_id: Self::parse_value("item_id", data)?,
                         transcript: Self::parse_value("transcript", data)?,
+                    }
+                }
+                "conversation.item.input_audio_transcription.failed" => {
+                    Self::ConversationItemInputAudioTranscriptionFailed {
+                        content_index: Self::parse_value("content_index", data)?,
+                        item_id: Self::parse_value("item_id", data)?,
+                        error: Self::parse_value("error", data)?,
                     }
                 }
                 "conversation.item.deleted" => Self::ConversationItemDeleted {
