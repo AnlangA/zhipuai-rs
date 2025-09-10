@@ -193,9 +193,10 @@ impl ChatApiRequestBuilder {
     ///                  .thinking_enable();
     /// ```
     pub fn thinking_enable(&mut self) -> &mut Self {
-        self.thinking = Some(Thinking::enable());
+        self.thinking = Some(Thinking::enabled());
         self
     }
+
     /// Disable chain-of-thought reasoning for the model.
     /// This parameter configuration is only supported by models of the GLM-4.5 version and above.
     /// When disabled, the model will provide direct answers without showing the reasoning process.
@@ -210,9 +211,10 @@ impl ChatApiRequestBuilder {
     ///                  .thinking_disable();
     /// ```
     pub fn thinking_disable(&mut self) -> &mut Self {
-        self.thinking = Some(Thinking::disable());
+        self.thinking = Some(Thinking::disabled());
         self
     }
+
     /// set temperature
     /// default: None。**when it is `None`, the model will use the default value : 0.95**
     /// example: 0.95
@@ -337,7 +339,7 @@ impl ChatApiRequestBuilder {
         self
     }
 
-    /// add messages alse see [`add_message`]
+    /// add messages, also see [`add_message`]
     pub fn add_messages(&mut self, messages: Messages) -> &mut Self {
         self.messages.extend(messages.messages);
         self

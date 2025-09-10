@@ -4,10 +4,10 @@ use crate::error::ZhipuApiError;
 use async_stream::try_stream;
 use bytes::{Buf, BufMut, BytesMut};
 use futures::StreamExt;
+use log::info;
 use reqwest::Response;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use log::info;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ChatApiResponse {
@@ -32,6 +32,7 @@ impl ChatApiResponse {
 struct Delta {
     role: String,
     content: Option<String>,
+    reasoning_content: Option<String>,
     tool_calls: Option<Vec<ToolCall>>,
 }
 
@@ -43,7 +44,11 @@ pub struct ChoiceStream {
 
 impl ChoiceStream {
     pub fn get_content(&self) -> String {
-        self.delta.content.clone().unwrap_or_default().clone()
+        self.delta.content.clone().unwrap_or_default()
+    }
+
+    pub fn get_reasoning_content(&self) -> String {
+        self.delta.reasoning_content.clone().unwrap_or_default()
     }
 
     pub fn get_tool_calls(&self) -> String {
@@ -115,13 +120,14 @@ pub fn response_context_stream(
         let mut response_text = response.bytes_stream();
         let mut buffer = BytesMut::new();
         let mut string_buffer = String::new();
+        let mut thinking = false;
         while let Some(chunk) = response_text.next().await {
             let bytes = chunk?;
             buffer.put(bytes);
             // Handle UTF-8 decoding
             decode_utf8(&mut buffer, &mut string_buffer)?;
             // Process JSON objects
-            let processed_data = process_json_objects(&mut string_buffer)?;
+            let processed_data = process_json_objects(&mut string_buffer, &mut thinking)?;
             for data in processed_data {
                 yield data;
             }
@@ -157,7 +163,10 @@ fn decode_utf8(buffer: &mut BytesMut, string_buffer: &mut String) -> Result<(), 
 }
 
 /// Processes JSON objects from a string buffer and returns a vector of processed data.
-fn process_json_objects(string_buffer: &mut String) -> Result<Vec<String>, ZhipuApiError> {
+fn process_json_objects(
+    string_buffer: &mut String,
+    thinking: &mut bool,
+) -> Result<Vec<String>, ZhipuApiError> {
     let mut processed_data = Vec::new();
     while let Some(end) = string_buffer.find('\n') {
         let json_str = string_buffer[..end].trim();
@@ -167,9 +176,24 @@ fn process_json_objects(string_buffer: &mut String) -> Result<Vec<String>, Zhipu
                     Ok(api_response) => {
                         if let Some(choices) = api_response.get_choices() {
                             for message in choices {
-                                if !message.get_content().to_string().is_empty() {
+                                if !message.get_content().is_empty() {
+                                    if *thinking {
+                                        processed_data.push("\n</think>\n".to_owned());
+                                        *thinking = false;
+                                    }
                                     processed_data.push(message.get_content().to_string());
+                                } else if !message.get_reasoning_content().is_empty() {
+                                    if !*thinking {
+                                        processed_data.push("<think>\n".to_owned());
+                                        *thinking = true;
+                                    }
+                                    processed_data
+                                        .push(message.get_reasoning_content().to_string());
                                 } else if !message.get_tool_calls().to_string().is_empty() {
+                                    if *thinking {
+                                        processed_data.push("\n</think>\n".to_owned());
+                                        *thinking = false;
+                                    }
                                     processed_data.push(message.get_tool_calls().to_string());
                                 }
                             }

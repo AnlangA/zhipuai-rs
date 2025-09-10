@@ -15,8 +15,8 @@ pub enum ChatModelName {
     Glm4VPlus,
     Glm4V,
     Glm4VFlash,
-    Glm41VThinkingFlash,
-    Glm41VThinkingFlashX,
+    Glm4p1VThinkingFlash,
+    Glm4p1VThinkingFlashX,
     GlmZeroPreview,
     GlmZ1Air,
     GlmZ1AirX,
@@ -30,6 +30,7 @@ pub enum ChatModelName {
     Glm4p5X,
     Glm4p5AirX,
     Glm4p5Flash,
+    Glm4p5V,
 }
 
 impl fmt::Display for ChatModelName {
@@ -47,8 +48,8 @@ impl fmt::Display for ChatModelName {
             Self::Glm4VPlus => write!(f, "glm-4v-plus"),
             Self::Glm4V => write!(f, "glm-4v"),
             Self::Glm4VFlash => write!(f, "glm-4v-flash"),
-            Self::Glm41VThinkingFlash => write!(f, "GLM-4.1V-Thinking-Flash"),
-            Self::Glm41VThinkingFlashX => write!(f, "GLM-4.1V-Thinking-FlashX"),
+            Self::Glm4p1VThinkingFlash => write!(f, "GLM-4.1V-Thinking-Flash"),
+            Self::Glm4p1VThinkingFlashX => write!(f, "GLM-4.1V-Thinking-FlashX"),
             Self::GlmZeroPreview => write!(f, "glm-zero-preview"),
             Self::GlmZ1Air => write!(f, "glm-z1-air"),
             Self::GlmZ1AirX => write!(f, "glm-z1-airx"),
@@ -62,6 +63,7 @@ impl fmt::Display for ChatModelName {
             Self::Glm4p5X => write!(f, "glm-4.5-x"),
             Self::Glm4p5AirX => write!(f, "glm-4.5-airx"),
             Self::Glm4p5Flash => write!(f, "glm-4.5-flash"),
+            Self::Glm4p5V => write!(f, "glm-4.5v"),
         }
     }
 }
@@ -81,8 +83,8 @@ impl From<ChatModelName> for &'static str {
             ChatModelName::Glm4VPlus => "glm-4v-plus",
             ChatModelName::Glm4V => "glm-4v",
             ChatModelName::Glm4VFlash => "glm-4v-flash",
-            ChatModelName::Glm41VThinkingFlash => "GLM-4.1V-Thinking-Flash",
-            ChatModelName::Glm41VThinkingFlashX => "GLM-4.1V-Thinking-FlashX",
+            ChatModelName::Glm4p1VThinkingFlash => "GLM-4.1V-Thinking-Flash",
+            ChatModelName::Glm4p1VThinkingFlashX => "GLM-4.1V-Thinking-FlashX",
             ChatModelName::GlmZeroPreview => "glm-zero-preview",
             ChatModelName::GlmZ1Air => "glm-z1-air",
             ChatModelName::GlmZ1AirX => "glm-z1-airx",
@@ -96,6 +98,7 @@ impl From<ChatModelName> for &'static str {
             ChatModelName::Glm4p5X => "glm-4.5-x",
             ChatModelName::Glm4p5AirX => "glm-4.5-airx",
             ChatModelName::Glm4p5Flash => "glm-4.5-flash",
+            ChatModelName::Glm4p5V => "glm-4.5v",
         }
     }
 }

@@ -768,26 +768,27 @@ impl CodeContext {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Thinking {
     #[serde(rename = "type")]
-    tinking: String,
+    thinking: String,
 }
 
 impl Default for Thinking {
     fn default() -> Self {
         Self {
-            tinking: "enable".to_string(),
+            thinking: "enabled".to_string(),
         }
     }
 }
 
 impl Thinking {
-    pub fn enable() -> Self {
+    pub fn enabled() -> Self {
         Self {
-            tinking: "enable".to_string(),
+            thinking: "enabled".to_string(),
         }
     }
-    pub fn disable() -> Self {
+
+    pub fn disabled() -> Self {
         Self {
-            tinking: "disable".to_string(),
+            thinking: "disabled".to_string(),
         }
     }
 }

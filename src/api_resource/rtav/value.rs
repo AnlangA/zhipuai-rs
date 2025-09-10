@@ -52,6 +52,24 @@ pub struct SimpleBrowser {
     pub text_citation: String,
 }
 
+#[derive(Copy, Clone, Debug, Deserialize, Serialize)]
+pub struct GreetingConfig {
+    /// 是否开启开场白
+    enable: bool,
+}
+
+impl GreetingConfig {
+    /// 开启
+    pub fn enable() -> Self {
+        Self { enable: true }
+    }
+
+    /// 关闭
+    pub fn disable() -> Self {
+        Self { enable: false }
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct BetaFields {
     /// 是否开启内置的自动搜索（为true,会在服务端内置搜索引擎,无需传入），开关仅在audio模式下生效，video模式由模型控制自动补充搜索内容 默认为true
@@ -59,11 +77,15 @@ pub struct BetaFields {
     /// 必填，通话模式：video_passive、audio（默认）
     #[serde(default)]
     pub chat_mode: ChatMode,
-    /// 语音转文字的方式，支持：e2e
+    /// 文本转语音的方式，支持：e2e。已不再支持修改该字段。
     pub tts_source: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub is_last_text: Option<bool>,
     pub simple_browser: Option<SimpleBrowser>,
+    /// 开场白内容
+    pub greeting_config: Option<GreetingConfig>,
+    /// 开场白内容
+    pub content: Option<String>,
 }
 
 impl BetaFields {
@@ -80,12 +102,13 @@ impl BetaFields {
         self
     }
 
-    /// 提供语音转文字的方式。
+    /// 提供文本转语音的方式。
+    /// 已不再支持修改该字段。
     ///
     /// # 参数
     /// * `tts_source`: 支持：e2e。
     pub fn with_tts_source(&mut self, tts_source: &str) -> &mut Self {
-        self.tts_source = Some(tts_source.to_string());
+        self.tts_source = Some(tts_source.to_owned());
         self
     }
 
@@ -95,6 +118,24 @@ impl BetaFields {
     /// * `auto_search`: 为true,会在服务端内置搜索引擎,无需传入，开关仅在audio模式下生效，video模式由模型控制自动补充搜索内容（默认为true）
     pub fn with_auto_search(&mut self, auto_search: bool) -> &mut Self {
         self.auto_search = Some(auto_search);
+        self
+    }
+
+    /// 提供开场白设置
+    ///
+    /// # 参数
+    /// * `greeting_config`: 开场白设置
+    pub fn with_greeting_config(&mut self, greeting_config: GreetingConfig) -> &mut Self {
+        self.greeting_config = Some(greeting_config);
+        self
+    }
+
+    /// 提供开场白内容
+    ///
+    /// # 参数
+    /// * `content`: 开场白内容
+    pub fn with_content(&mut self, content: &str) -> &mut Self {
+        self.content = Some(content.to_owned());
         self
     }
 }
@@ -107,6 +148,8 @@ impl Default for BetaFields {
             tts_source: Some("e2e".to_string()),
             is_last_text: None,
             simple_browser: None,
+            greeting_config: None,
+            content: Default::default(),
         }
     }
 }
@@ -154,6 +197,26 @@ impl TurnDetection {
     }
 }
 
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct InputAudioNoiseReduction {
+    /// 降噪类型。near_field 适用于近距离说话的麦克风，如耳机；far_field 适用于远距离麦克风，如笔记本电脑或会议室麦克风。
+    r#type: String,
+}
+
+impl InputAudioNoiseReduction {
+    pub fn near() -> Self {
+        Self {
+            r#type: "near_field".to_owned(),
+        }
+    }
+
+    pub fn far() -> Self {
+        Self {
+            r#type: "far_field".to_owned(),
+        }
+    }
+}
+
 //noinspection SpellCheckingInspection
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Session {
@@ -174,7 +237,14 @@ pub struct Session {
     pub modalities: Vec<String>,
     /// 系统指令，用于引导模型生成期望的响应。
     pub instructions: Option<String>,
-    /// 发音人： 女声"tongtong"; 男声"xiaochen"；“默认女声"tongtong”。
+    /// 降噪模式，目前支持语音通话下的降噪
+    pub input_audio_noise_reduction: Option<InputAudioNoiseReduction>,
+    /// 默认女声:tongtong.
+    /// 甜美女性：female-tianmei
+    /// 青年大学生：male-qn-daxuesheng.
+    /// 精英青年：male-qn-jingying.
+    /// 萌萌女童：lovely_girl.
+    /// 少女：female-shaonv
     pub voice: Option<String>,
     /// 音频输入格式，支持wav（wav48表示48K采样率）；
     #[serde(default)]
@@ -185,6 +255,7 @@ pub struct Session {
     /// 回复的最大长度，对应文本 token计数， “0” <max_response_output_tokens<= “1024”，超过这个长度回复会被截断 。
     pub max_response_output_tokens: Option<String>,
     pub tool_choice: Option<String>,
+    /// ServerVAD 时，更新tools要同时传入turn_detection。当前仅audio模式支持tools调用
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tools: Option<Vec<super::super::chat::Function>>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -202,6 +273,7 @@ impl Session {
             model: Default::default(),
             modalities: Default::default(),
             instructions: Default::default(),
+            input_audio_noise_reduction: Default::default(),
             voice: Default::default(),
             input_audio_format: "wav".to_string(),
             output_audio_format: "pcm".to_string(),
@@ -212,6 +284,17 @@ impl Session {
             turn_detection: None,
             beta_fields: Default::default(),
         }
+    }
+
+    /// glm-realtime-air
+    pub fn with_air_model(&mut self) -> &mut Self {
+        self.model = "glm-realtime-air".to_owned();
+        self
+    }
+
+    pub fn with_flash_model(&mut self) -> &mut Self {
+        self.model = "glm-realtime-flash".to_owned();
+        self
     }
 
     /// 提供音频输入格式，支持wav；
@@ -229,6 +312,18 @@ impl Session {
     /// * `output_audio_format`: 音频格式。
     pub fn with_output_audio_format(&mut self, output_audio_format: &str) -> &mut Self {
         self.output_audio_format = output_audio_format.to_string();
+        self
+    }
+
+    /// 提供降噪模式，目前支持语音通话下的降噪
+    ///
+    /// * 参数
+    /// * `input_audio_noise_reduction`: 音频降噪模式。
+    pub fn with_input_audio_noise_reduction(
+        &mut self,
+        input_audio_noise_reduction: InputAudioNoiseReduction,
+    ) -> &mut Self {
+        self.input_audio_noise_reduction = Some(input_audio_noise_reduction);
         self
     }
 
@@ -253,7 +348,13 @@ impl Session {
     /// 提供发音人。
     ///
     /// # 参数
-    /// * `voice`: 女声"tongtong"; 男声"xiaochen"；“默认女声"tongtong”。
+    /// * `voice`:
+    /// 默认女声:tongtong.
+    /// 甜美女性：female-tianmei
+    /// 青年大学生：male-qn-daxuesheng.
+    /// 精英青年：male-qn-jingying.
+    /// 萌萌女童：lovely_girl.
+    /// 少女：female-shaonv
     pub fn with_voice(&mut self, voice: &str) -> &mut Self {
         self.voice = Some(voice.to_owned());
         self

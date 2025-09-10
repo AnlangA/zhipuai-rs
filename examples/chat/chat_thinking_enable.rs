@@ -4,7 +4,7 @@ use zhipuai_rs::prelude::*;
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let api_key = user_key()?;
-    
+
     // 使用支持 thinking 功能的 GLM-4.5 模型，并启用思维链推理
     let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::Glm4p5.into())
         .add_message(Message::new(
@@ -23,6 +23,7 @@ async fn main() -> anyhow::Result<()> {
         ))
         .thinking_enable()  // 启用思维链推理，模型会展示推理过程
         .max_tokens(4000)
+        .stream_enable(true)
         .build();
 
     println!("=== 启用思维链推理模式 ===");
@@ -30,19 +31,16 @@ async fn main() -> anyhow::Result<()> {
     println!("\n=== 模型响应 ===");
 
     let response = post(api_url, api_key, request_json.to_json()).await?;
-
-    match chat_response_context(response).await {
-        Ok(context) => {
-            if let Some(choices) = context.get_choices() {
-                for choice in choices {
-                    println!("{}", choice.message());
-                }
-            }
-        }
-        Err(err) => {
-            println!("错误: {:?}", err);
+    let stream = response_context_stream(response);
+    tokio::pin!(stream);
+    while let Some(item) = stream.next().await {
+        let item = item?;
+        print!("{}", item);
+        if item.find('\n').is_some() {
+            io::stdout().flush()?;
         }
     }
+    io::stdout().flush()?;
 
     Ok(())
 }

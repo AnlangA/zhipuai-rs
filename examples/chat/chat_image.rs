@@ -1,18 +1,14 @@
 use base64::prelude::*;
 use std::io::{self, Write};
-use tokio::{fs::File, io::AsyncReadExt};
+use tokio::fs::read;
 use zhipuai_rs::prelude::*;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let api_key = user_key()?;
-    let mut data = Default::default();
-    File::open("examples/assets/video_frame.jpg")
-        .await?
-        .read_to_end(&mut data)
-        .await?;
+    let data = read("examples/assets/video_frame.jpg").await?;
     let image_url = BASE64_STANDARD.encode(&data);
-    let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::Glm4VFlash.into())
+    let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::Glm4p5V.into())
         .add_message(Message::new(
             Role::User.into(),
             Some(

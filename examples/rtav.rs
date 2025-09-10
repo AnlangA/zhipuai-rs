@@ -1,6 +1,7 @@
 //! 质朴AI实时音视频API示例
 
-use rodio::{OutputStream, Sink, buffer::SamplesBuffer};
+use bytes::Buf;
+use rodio::{OutputStreamBuilder, Sink, buffer::SamplesBuffer};
 use std::io::{self, Write};
 use tokio::fs::read;
 use zhipuai_rs::prelude::*;
@@ -9,8 +10,8 @@ use zhipuai_rs::prelude::*;
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let api_key = user_key()?;
-    let (_stream, handle) = OutputStream::try_default()?;
-    let player = Sink::try_new(&handle)?;
+    let output_stream = OutputStreamBuilder::from_default_device()?.open_stream()?;
+    let player = Sink::connect_new(output_stream.mixer());
 
     // 演示server_vad模式下的音频和视频发送
     let (mut sink, mut stream) = start_realtime_session(&api_key).await?;
@@ -20,7 +21,7 @@ async fn main() -> anyhow::Result<()> {
             .with_output_audio_format("pcm")
             .with_instructions("结合图中场景说说你的看法。")
             .with_turn_detection(RealtimeTurnDetection::new().with_server_vad())
-            .with_voice("xiaochen")
+            .with_voice("lovely_girl")
             .with_temperature(0.6)
             .with_max_response_output_tokens("80")
             .with_modalities(&["text", "audio"])
@@ -119,14 +120,11 @@ async fn main() -> anyhow::Result<()> {
 }
 
 #[inline]
-fn samples<const C: u16, const SR: u32>(data: Vec<u8>) -> SamplesBuffer<i16> {
-    let mut out = Vec::with_capacity(data.len() / size_of::<i16>());
-    let mut i = 0;
-    while i < data.len() {
-        out.push(i16::from_le_bytes([data[i], data[i + 1]]));
-        i += size_of::<i16>();
-    }
-
+fn samples<const C: u16, const SR: u32>(data: Vec<u8>) -> SamplesBuffer {
+    let out = data
+        .chunks(size_of::<i16>())
+        .map(|mut i| i.get_i16_le() as f32 / 32768f32)
+        .collect::<Vec<_>>();
     SamplesBuffer::new(C, SR, out)
 }
 
