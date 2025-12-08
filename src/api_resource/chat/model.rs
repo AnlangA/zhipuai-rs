@@ -31,6 +31,9 @@ pub enum ChatModelName {
     Glm4p5AirX,
     Glm4p5Flash,
     Glm4p5V,
+    Glm4p6,
+    Glm4p6V,
+    Glm4p6VFlash,
 }
 
 impl fmt::Display for ChatModelName {
@@ -64,6 +67,9 @@ impl fmt::Display for ChatModelName {
             Self::Glm4p5AirX => write!(f, "glm-4.5-airx"),
             Self::Glm4p5Flash => write!(f, "glm-4.5-flash"),
             Self::Glm4p5V => write!(f, "glm-4.5v"),
+            Self::Glm4p6 => write!(f, "glm-4.6"),
+            Self::Glm4p6V => write!(f, "glm-4.6v"),
+            Self::Glm4p6VFlash => write!(f, "glm-4.6v-flash"),
         }
     }
 }
@@ -99,6 +105,9 @@ impl From<ChatModelName> for &'static str {
             ChatModelName::Glm4p5AirX => "glm-4.5-airx",
             ChatModelName::Glm4p5Flash => "glm-4.5-flash",
             ChatModelName::Glm4p5V => "glm-4.5v",
+            ChatModelName::Glm4p6 => "glm-4.6",
+            ChatModelName::Glm4p6V => "glm-4.6v",
+            ChatModelName::Glm4p6VFlash => "glm-4.6v-flash",
         }
     }
 }

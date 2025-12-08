@@ -5,8 +5,8 @@ use zhipuai_rs::prelude::*;
 async fn main() -> anyhow::Result<()> {
     let api_key = user_key()?;
 
-    // 使用支持 thinking 功能的 GLM-4.5 模型，并启用思维链推理
-    let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::Glm4p5.into())
+    // 使用支持 thinking 功能的 GLM-4.6 模型，并启用思维链推理
+    let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::Glm4p6.into())
         .add_message(Message::new(
             Role::System.into(),
             Some(Context::SimpleContexts(
