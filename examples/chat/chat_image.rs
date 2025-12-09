@@ -8,7 +8,7 @@ async fn main() -> anyhow::Result<()> {
     let api_key = user_key()?;
     let data = read("examples/assets/video_frame.jpg").await?;
     let image_url = BASE64_STANDARD.encode(&data);
-    let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::Glm4p5V.into())
+    let (api_url, request_json) = BigModel::<Chat>::new(ChatModelName::Glm4p6VFlash.into())
         .add_message(Message::new(
             Role::User.into(),
             Some(

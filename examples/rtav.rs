@@ -33,7 +33,7 @@ async fn main() -> anyhow::Result<()> {
             ),
     )
     .await?;
-    sink.input_audio_buffer_append(&read("examples/assets/audio.wav").await?)
+    sink.input_audio_buffer_append(&read("examples/assets/test.wav").await?)
         .await?;
     sink.input_audio_buffer_append_video_frame(&read("examples/assets/video_frame.jpg").await?)
         .await?;
@@ -51,7 +51,10 @@ async fn main() -> anyhow::Result<()> {
             println!("Audio data: {}", delta.len());
             player.append(samples::<1, 24000>(delta));
             continue;
-        } else if let RealtimeEventData::ResponseDone(_) = event {
+        } else if let RealtimeEventData::ResponseAudioDone { .. } = event {
+            break;
+        } else if let RealtimeEventData::ResponseTextDone { text, .. } = event {
+            println!("{}", text);
             break;
         }
         println!("{:?}", event);
