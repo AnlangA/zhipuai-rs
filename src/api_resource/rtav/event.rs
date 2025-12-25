@@ -186,13 +186,17 @@ pub enum EventData {
         error: Error,
     },
     /// 客户端使用 conversation.item.delete 事件删除对话项目时，系统会返回服务器 conversation.item.deleted。
-    ConversationItemDeleted { item_id: String },
+    ConversationItemDeleted {
+        item_id: String,
+    },
     /// 发生错误时，系统会返回服务器 error 事件（可能是客户端问题，也可能是服务器问题，具体可查看错误码文档）。 大多数错误都是可恢复的，并且会话将保持打开状态。
     Error(Error),
     /// 当会话创建/更新是时会返回，后续每30s返回一次，Heartbeat表示对话当前是活跃的链接状态；
     Heartbeat,
     /// 输入音频缓冲区由客户端提交或在服务器 VAD 模式下自动提交时，系统会返回服务器 input_audio_buffer.committed 事件。
-    InputAudioBufferCommitted { item_id: String },
+    InputAudioBufferCommitted {
+        item_id: String,
+    },
     /// 客户端使用 input_audio_buffer.clear 事件清除输入音频缓冲区时，系统会返回服务器 input_audio_buffer.cleared事件。
     InputAudioBufferCleared,
     /// 在音频缓冲区中检测到语音时，系统会以 server_vad 模式返回服务器 input_audio_buffer.speech_started 事件。
@@ -202,7 +206,10 @@ pub enum EventData {
     },
     /// server_vad 模式下服务器在音频缓冲区中检测到语音结束时，系统会返回服务器 input_audio_buffer.speech_stopped 事件。
     /// 服务器还发送一个 conversation.item.created 事件，其中包含从音频缓冲区创建的用户消息项。
-    InputAudioBufferSpeechStopped { audio_end_ms: u32, item_id: String },
+    InputAudioBufferSpeechStopped {
+        audio_end_ms: u32,
+        item_id: String,
+    },
     /// 速率限制发生变化时通知
     RateLimitsUpdated(Vec<RateLimit>),
     /// 创建新响应时，系统会返回服务器 response.done 事件。
@@ -255,11 +262,16 @@ pub enum EventData {
         output_index: u32,
         response_id: String,
     },
+    ResponseFunctionCallInnerTool,
+    ResponseFunctionCallInnerToolResult,
     /// video模型内置了搜索的工具，当识别到用户的提问需要通过搜索获取外部数据时，会返回此事件。服务内部会自动调用搜索接口获取数据，获取搜索结果后会再次调用模型，获取到模型回复后继续流式返回数据。
     /// 此事件在response.created事件之后，在response.audio_transcript.delta之前，如搜索结果报错，会返回错误事件
     /// video_model_query_error。
     /// 当前视频链路我们还未支持开关搜索工具，将在后续的版本中支持。
-    ResponseFunctionCallSimpleBrowser { name: String, session: Session },
+    ResponseFunctionCallSimpleBrowser {
+        name: String,
+        session: Session,
+    },
     /// 在响应生成过程中创建新项时，系统会返回服务器 response.output_item.added 事件。
     ResponseOutputItemAdded {
         item: ConversationItem,
@@ -429,6 +441,10 @@ impl EventData {
                         output_index: Self::parse_value("output_index", data)?,
                         response_id: Self::parse_value("response_id", data)?,
                     }
+                }
+                "response.function_call.inner_tool" => Self::ResponseFunctionCallInnerTool,
+                "response.function_call.inner_tool.result" => {
+                    Self::ResponseFunctionCallInnerToolResult
                 }
                 "response.function_call.simple_browser" => {
                     Self::ResponseFunctionCallSimpleBrowser {

@@ -37,6 +37,11 @@
   - [x] `glm-4.5-airx`
   - [x] `glm-4.5-flash`
   - [x] `glm-4.5v`
+  - [x] `glm-4.6`
+  - [x] `glm-4.6v`
+  - [x] `glm-4.6v-flash`
+  - [x] `glm-4.7`
+  - [x] `autoglm-phone`
   - [ ] `emohaa`
 - realtime 系列
   - [x] `glm-realtime-air`

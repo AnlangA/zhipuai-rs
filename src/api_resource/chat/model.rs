@@ -4,6 +4,9 @@ use std::fmt;
 //noinspection SpellCheckingInspection
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum ChatModelName {
+    AutoGlmPhone,
+    CodeGeeX,
+    CharGlm4,
     Glm4Plus,
     Glm4Air250414,
     Glm4AirX,
@@ -23,8 +26,6 @@ pub enum ChatModelName {
     GlmZ1Flash,
     Glm4Voice,
     Glm4AllTools,
-    CodeGeeX,
-    CharGlm4,
     Glm4p5,
     Glm4p5Air,
     Glm4p5X,
@@ -34,12 +35,14 @@ pub enum ChatModelName {
     Glm4p6,
     Glm4p6V,
     Glm4p6VFlash,
+    Glm4p7,
 }
 
 impl fmt::Display for ChatModelName {
     //noinspection SpellCheckingInspection
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
+            Self::AutoGlmPhone => write!(f, "autoglm-phone"),
             Self::Glm4Plus => write!(f, "glm-4-plus"),
             Self::Glm4Air250414 => write!(f, "glm-4-air-250414"),
             Self::Glm4AirX => write!(f, "glm-4-airx"),
@@ -70,6 +73,7 @@ impl fmt::Display for ChatModelName {
             Self::Glm4p6 => write!(f, "glm-4.6"),
             Self::Glm4p6V => write!(f, "glm-4.6v"),
             Self::Glm4p6VFlash => write!(f, "glm-4.6v-flash"),
+            Self::Glm4p7 => write!(f, "glm-4.7"),
         }
     }
 }
@@ -78,6 +82,7 @@ impl From<ChatModelName> for &'static str {
     //noinspection SpellCheckingInspection
     fn from(model: ChatModelName) -> Self {
         match model {
+            ChatModelName::AutoGlmPhone => "autoglm-phone",
             ChatModelName::Glm4Plus => "glm-4-plus",
             ChatModelName::Glm4Air250414 => "glm-4-air-250414",
             ChatModelName::Glm4AirX => "glm-4-air-x",
@@ -108,6 +113,7 @@ impl From<ChatModelName> for &'static str {
             ChatModelName::Glm4p6 => "glm-4.6",
             ChatModelName::Glm4p6V => "glm-4.6v",
             ChatModelName::Glm4p6VFlash => "glm-4.6v-flash",
+            ChatModelName::Glm4p7 => "glm-4.7",
         }
     }
 }
